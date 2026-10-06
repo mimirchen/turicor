@@ -1,0 +1,8 @@
+# Whitelist: nothing is published unless listed here
+*
+!/.gitignore
+!/index.html
+!/CNAME
+!/assets/
+!/assets/**
+.DS_Store

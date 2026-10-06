@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en" data-lang="en" class="no-js">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Turicor — Real-time AI guidance for heart valve clip procedures</title>
+<meta name="description" content="Turicor builds AutoClip: intraoperative AI that reads live transesophageal echo during transcatheter edge-to-edge repair (TEER) and gives the operator a number for every clip decision. Research prototype.">
+<meta property="og:title" content="Turicor — Real-time AI guidance for heart valve clip procedures">
+<meta property="og:description" content="AutoClip reads live TEE during TEER and gives the operator a number for every clip decision.">
+<meta property="og:url" content="https://www.turicor.com">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Turicor">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 120 120'%3E%3Crect x='6' y='6' width='108' height='108' rx='10' fill='%23A8362B'/%3E%3Ctext x='60' y='84' font-size='68' font-family='serif' font-weight='600' text-anchor='middle' fill='%23F3EEE4'%3E心%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Noto+Serif+SC:wght@500;600;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+<script>document.documentElement.classList.replace('no-js','js');</script>
+<style>
+/* ============ TOKENS — same dark editorial ground as kmryo.com ============ */
+:root {
+  --bg:      #1A1B1E;
+  --bg-2:    #202226;
+  --loader:  #131417;
+  --cream:   #ECEAE3;
+  --muted:   #A8A89E;
+  --faint:   #6E6E67;
+  --seal:    #CE4A33;
+  --seal-deep: #A8362B;
+  --hair:    rgba(236,234,227,0.16);
+  --hair-soft: rgba(236,234,227,0.08);
+  --now:     #7FB7A4;
+  --next:    #D9B36A;
+  --star:    #8E9BD6;
+}
+
+/* ============ BASE ============ */
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { background: var(--bg); scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--cream);
+  font-family: "Instrument Sans", "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 1.02rem; line-height: 1.65;
+  -webkit-font-smoothing: antialiased; overflow-x: hidden;
+}
+html[data-lang="zh"] body { font-family: "Noto Sans SC", "Instrument Sans", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+.it { font-family: "Cormorant Garamond", "Noto Serif SC", Georgia, serif; font-style: italic; font-weight: 500; }
+html[data-lang="zh"] .it { font-family: "Noto Serif SC", "Cormorant Garamond", Georgia, serif; font-style: normal; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
+:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; border-radius: 2px; }
+img, video { max-width: 100%; display: block; }
+::selection { background: var(--seal); color: var(--cream); }
+html[data-lang="en"] .zh { display: none !important; }
+html[data-lang="zh"] .en { display: none !important; }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem, 5vw, 3.5rem); }
+.label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.22em; color: var(--muted); font-weight: 500; }
+html[data-lang="zh"] .label { letter-spacing: 0.4em; }
+section { padding: clamp(4rem, 10vw, 8rem) 0; border-top: 1px solid var(--hair-soft); }
+h2 { font-size: clamp(1.7rem, 3.6vw, 2.6rem); font-weight: 500; line-height: 1.18; letter-spacing: -0.01em; margin: 0.9rem 0 1.4rem; max-width: 22ch; }
+h3 { font-size: 1.12rem; font-weight: 600; margin-bottom: 0.5rem; }
+p.lead { font-size: 1.14rem; color: var(--muted); max-width: 60ch; }
+.grid { display: grid; gap: 2rem; }
+.grid-3 { grid-template-columns: repeat(3, 1fr); }
+.grid-2 { grid-template-columns: 1fr 1fr; }
+@media (max-width: 860px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
+
+/* ============ LOADER (kmryo intro, Turicor words) ============ */
+#loader {
+  position: fixed; inset: 0; z-index: 200; background: var(--loader);
+  display: grid; place-items: center;
+  transition: transform 0.85s cubic-bezier(0.76, 0, 0.24, 1), border-radius 0.85s cubic-bezier(0.76, 0, 0.24, 1);
+}
+#loader.done { transform: translateY(-110%); border-radius: 0 0 50% 50% / 0 0 9vh 9vh; }
+#loader .word { font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 500; color: var(--cream); display: flex; align-items: center; gap: 0.9rem; }
+#loader .word::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: var(--seal); }
+html.no-js #loader, html.reduced #loader { display: none; }
+body.locked { overflow: hidden; }
+
+/* ============ NAV ============ */
+#nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: transform 0.45s ease, background 0.3s ease; background: transparent; }
+#nav.solid { background: color-mix(in srgb, var(--bg) 82%, transparent); backdrop-filter: blur(12px); }
+#nav.hide { transform: translateY(-105%); }
+#nav .row { display: flex; align-items: center; gap: 1.8rem; padding: 1.1rem 0; }
+.brand { display: flex; align-items: center; gap: 0.75rem; margin-right: auto; font-weight: 500; letter-spacing: 0.01em; }
+.seal-mini { width: 32px; height: 32px; border-radius: 7px; background: var(--seal-deep); color: #F3EEE4; display: grid; place-items: center; font-family: "Noto Serif SC", serif; font-weight: 600; font-size: 1.05rem; transform: rotate(-1.6deg); }
+.brand-sub { color: var(--muted); font-weight: 400; }
+.nav-links { display: flex; gap: 1.7rem; }
+.nav-links a { font-size: 0.92rem; color: var(--muted); position: relative; }
+.nav-links a::after { content: ""; position: absolute; left: 50%; bottom: -6px; width: 5px; height: 5px; border-radius: 50%; background: var(--seal); transform: translateX(-50%) scale(0); transition: transform 0.25s ease; }
+.nav-links a:hover { color: var(--cream); }
+.nav-links a:hover::after { transform: translateX(-50%) scale(1); }
+.lang-toggle { border: 1px solid var(--hair); border-radius: 999px; padding: 0.35rem 1rem; font-size: 0.85rem; color: var(--cream); transition: border-color 0.25s ease; }
+.lang-toggle:hover { border-color: var(--cream); }
+@media (max-width: 860px) { .nav-links { display: none; } .brand-sub { display: none; } }
+
+/* ============ REVEALS ============ */
+html.js .lines .li { display: block; overflow: hidden; }
+html.js .lines .li > span { display: block; transform: translateY(120%); transition: transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+html.js .lines.in .li > span { transform: translateY(0); }
+html.js .lines.in .li:nth-child(2) > span { transition-delay: 0.08s; }
+html.js .lines.in .li:nth-child(3) > span { transition-delay: 0.16s; }
+html.js .fade { opacity: 0; transform: translateY(28px); transition: opacity 0.9s ease, transform 0.9s cubic-bezier(0.22, 1, 0.36, 1); }
+html.js .fade.in { opacity: 1; transform: none; }
+html.js .fade.d1 { transition-delay: 0.1s; } html.js .fade.d2 { transition-delay: 0.2s; } html.js .fade.d3 { transition-delay: 0.3s; }
+html.reduced .lines .li > span { transform: none !important; }
+html.reduced .fade { opacity: 1 !important; transform: none !important; transition: none; }
+
+/* ============ HERO ============ */
+.hero { min-height: 100svh; display: grid; align-items: end; padding: 8rem 0 4rem; border-top: none; position: relative; overflow: hidden; }
+.hero-bg { position: absolute; inset: 0; z-index: 0; pointer-events: none; opacity: 0.55; }
+.hero .wrap { position: relative; z-index: 1; }
+.hero h1 { font-size: clamp(2.3rem, 6.2vw, 5rem); font-weight: 500; line-height: 1.05; letter-spacing: -0.02em; margin: 1rem 0 1.6rem; }
+.hero h1 .em { color: var(--seal); }
+.hero p.lead { margin-bottom: 2.2rem; }
+.cta { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 0.6rem; padding: 0.8rem 1.5rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease; }
+.btn-fill { background: var(--seal-deep); color: var(--cream); }
+.btn-fill:hover { background: var(--seal); transform: translateY(-1px); }
+.btn-line { border: 1px solid var(--hair); color: var(--cream); }
+.btn-line:hover { border-color: var(--cream); }
+.hero-meta { display: flex; gap: 2.4rem; flex-wrap: wrap; margin-top: 3.5rem; padding-top: 1.4rem; border-top: 1px solid var(--hair-soft); font-size: 0.86rem; color: var(--muted); }
+.hero-meta b { color: var(--cream); font-weight: 500; }
+
+/* ============ PROBLEM ============ */
+.stat { border-top: 1px solid var(--hair); padding-top: 1.2rem; }
+.stat .num { font-family: "Cormorant Garamond", "Noto Serif SC", serif; font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--cream); font-weight: 500; }
+.stat .num small { font-size: 0.45em; color: var(--muted); margin-left: 0.3rem; }
+.stat p { color: var(--muted); margin-top: 0.6rem; font-size: 0.95rem; }
+
+/* ============ PRODUCT ============ */
+.card { background: var(--bg-2); border: 1px solid var(--hair-soft); border-radius: 12px; padding: 1.8rem; }
+.card .tag { display: inline-block; font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.22rem 0.6rem; border-radius: 4px; margin-bottom: 1rem; font-weight: 600; }
+.tag-now { background: color-mix(in srgb, var(--now) 18%, transparent); color: var(--now); }
+.tag-next { background: color-mix(in srgb, var(--next) 18%, transparent); color: var(--next); }
+.tag-star { background: color-mix(in srgb, var(--star) 18%, transparent); color: var(--star); }
+.card p { color: var(--muted); font-size: 0.97rem; }
+.decisions { list-style: none; margin-top: 1rem; }
+.decisions li { display: grid; grid-template-columns: 2.2rem 1fr; gap: 0.6rem; padding: 0.7rem 0; border-top: 1px solid var(--hair-soft); font-size: 0.95rem; }
+.decisions li b { color: var(--seal); font-family: "Cormorant Garamond", serif; font-size: 1.5rem; font-weight: 600; line-height: 1; }
+.decisions li span { color: var(--cream); }
+.decisions li em { display: block; color: var(--muted); font-style: normal; font-size: 0.88rem; }
+
+/* ============ DEMO ============ */
+.demo-frame { position: relative; aspect-ratio: 926/518; max-width: 900px; margin: 0 auto; border-radius: 12px; overflow: hidden; background: #0E0F11; border: 1px solid var(--hair-soft); display: grid; place-items: center; text-align: center; }
+.demo-frame video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.demo-caption { max-width: 900px; margin: 1rem auto 0; color: var(--muted); font-size: 0.9rem; text-align: center; }
+.demo-frame .placeholder { color: var(--faint); padding: 2rem; }
+.demo-frame .placeholder .big { color: var(--muted); font-size: 1.2rem; margin-bottom: 0.4rem; }
+.demo-frame .scan { position: absolute; inset: 0; pointer-events: none; background: repeating-linear-gradient(0deg, transparent 0 3px, rgba(236,234,227,0.025) 3px 4px); }
+
+/* ============ EVIDENCE ============ */
+.ev { list-style: none; }
+.ev li { display: grid; grid-template-columns: 9rem 1fr; gap: 1.5rem; padding: 1.2rem 0; border-top: 1px solid var(--hair-soft); }
+.ev li .k { color: var(--muted); font-size: 0.86rem; letter-spacing: 0.08em; text-transform: uppercase; padding-top: 0.2rem; }
+.ev li .v b { font-weight: 600; }
+.ev li .v p { color: var(--muted); font-size: 0.94rem; margin-top: 0.2rem; }
+@media (max-width: 600px) { .ev li { grid-template-columns: 1fr; gap: 0.3rem; } }
+
+/* ============ TEAM ============ */
+.person { border-top: 1px solid var(--hair); padding-top: 1.2rem; }
+.person .role { color: var(--seal); font-size: 0.8rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
+.person h3 { margin-top: 0.4rem; }
+.person p { color: var(--muted); font-size: 0.95rem; }
+
+/* ============ CONTACT / FOOTER ============ */
+.contact { background: var(--bg-2); }
+.contact h2 { max-width: 28ch; }
+footer { padding: 2.5rem 0 3rem; border-top: 1px solid var(--hair-soft); font-size: 0.84rem; color: var(--faint); }
+footer .row { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
+footer .disclaimer { max-width: 70ch; margin-top: 1rem; line-height: 1.55; }
+</style>
+</head>
+<body class="locked">
+<noscript><style>#loader{display:none}body.locked{overflow:auto}.fade,.lines .li>span{opacity:1 !important;transform:none !important}</style></noscript>
+
+<div id="loader" aria-hidden="true"><div class="word" id="loaderWord">心</div></div>
+
+<header id="nav">
+  <div class="wrap row">
+    <a class="brand" href="#top" aria-label="Turicor — home">
+      <span class="seal-mini" aria-hidden="true">心</span>
+      <span>Turicor&ensp;<span class="brand-sub">— 心机智能</span></span>
+    </a>
+    <nav class="nav-links" aria-label="Main">
+      <a href="#problem"><span class="en">Problem</span><span class="zh">问题</span></a>
+      <a href="#autoclip"><span class="en">AutoClip</span><span class="zh">AutoClip</span></a>
+      <a href="#evidence"><span class="en">Evidence</span><span class="zh">证据</span></a>
+      <a href="#team"><span class="en">Team</span><span class="zh">团队</span></a>
+      <a href="#contact"><span class="en">Contact</span><span class="zh">联系</span></a>
+    </nav>
+    <button class="lang-toggle" id="langToggle" aria-label="Switch language">中文</button>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <svg class="hero-bg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <radialGradient id="g" cx="62%" cy="40%" r="55%">
+          <stop offset="0" stop-color="#2A2C31"/><stop offset="1" stop-color="#1A1B1E" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <rect width="1200" height="800" fill="url(#g)"/>
+      <!-- echo sector: an abstract TEE fan, no patient imagery -->
+      <g fill="none" stroke="#ECEAE3" stroke-opacity="0.07" stroke-width="1">
+        <path d="M740 120 L440 700 A520 520 0 0 0 1040 700 Z"/>
+        <path d="M740 120 L560 560 A300 300 0 0 0 920 560 Z"/>
+        <path d="M740 120 L650 400 A150 150 0 0 0 830 400 Z"/>
+      </g>
+      <g stroke="#CE4A33" stroke-opacity="0.55" stroke-width="2" fill="none" stroke-linecap="round">
+        <path d="M700 470 q22 -18 44 0"/><path d="M760 470 q22 -18 44 0"/>
+        <path d="M752 440 v60"/>
+      </g>
+    </svg>
+    <div class="wrap">
+      <div class="label fade"><span class="en">AutoClip · Intraoperative AI for TEER</span><span class="zh">AutoClip · TEER 术中人工智能</span></div>
+      <h1 class="lines">
+        <span class="li"><span class="en">Real-time AI guidance</span><span class="zh">瓣膜夹合手术的</span></span>
+        <span class="li"><span class="en">for heart valve <span class="em">clip</span> procedures.</span><span class="zh">实时 <span class="em">AI</span> 导航。</span></span>
+      </h1>
+      <p class="lead fade d1">
+        <span class="en">In transcatheter edge-to-edge repair, the operator works entirely through a live ultrasound image. AutoClip reads that image, maps the valve and the clip on every frame, and gives the operator a number for each decision.</span>
+        <span class="zh">经导管缘对缘修复（TEER）里，术者完全依靠一幅实时超声图像操作。AutoClip 读懂这幅图像，在每一帧上画出瓣膜与夹子，并为每一个决策给出一个数字。</span>
+      </p>
+      <div class="cta fade d2">
+        <a class="btn btn-fill" href="mailto:hello@turicor.com?subject=AutoClip%20early%20access"><span class="en">Request early access</span><span class="zh">申请试用</span></a>
+        <a class="btn btn-line" href="#demo"><span class="en">Watch the demo</span><span class="zh">看演示</span></a>
+      </div>
+      <div class="hero-meta fade d3">
+        <span><b>TCT 2025</b> <span class="en">Featured Innovation</span><span class="zh">Featured Innovation</span></span>
+        <span><b>4</b> <span class="en">centers · Europe & China</span><span class="zh">中心 · 欧洲与中国</span></span>
+        <span><b>Zürich → San Francisco</b></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PROBLEM ============ -->
+  <section id="problem">
+    <div class="wrap">
+      <div class="label fade"><span class="en">The problem</span><span class="zh">问题</span></div>
+      <h2 class="fade"><span class="en">Every TEER decision is made by eye.</span><span class="zh">TEER 的每一个决策都靠肉眼。</span></h2>
+      <p class="lead fade d1">
+        <span class="en">Where to clip, how deep to grasp, when to release: on today's screen there is not a single number. Give the same frame to four specialists and you get four different answers. That is why the learning curve is long, why results vary between operators, and why most hospitals cannot start.</span>
+        <span class="zh">夹在哪里、抓多深、何时释放：今天的屏幕上没有一个数字。同一帧给四位专家，得到四个答案。这就是学习曲线长、术者之间结果不一、多数医院开展不了的原因。</span>
+      </p>
+      <div class="grid grid-3" style="margin-top:3rem">
+        <div class="stat fade d1">
+          <div class="num">0</div>
+          <p><span class="en">numbers on the operator's screen during a clip procedure today.</span><span class="zh">今天的夹合手术中，术者屏幕上的数字个数。</span></p>
+        </div>
+        <div class="stat fade d2">
+          <div class="num">2–4<small>mm</small></div>
+          <p><span class="en">disagreement between four experts on the medial papillary muscle, independent of image quality.</span><span class="zh">四位专家在内侧乳头肌位置上的分歧，与图像质量无关。</span></p>
+        </div>
+        <div class="stat fade d3">
+          <div class="num">300k<small>+</small></div>
+          <p><span class="en">patients treated with mitral clips worldwide, with volume still climbing fastest among structural heart devices.</span><span class="zh">全球二尖瓣夹合治疗患者数，仍是结构心器械里增长最快的一条曲线。</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ AUTOCLIP ============ -->
+  <section id="autoclip">
+    <div class="wrap">
+      <div class="label fade"><span class="en">AutoClip</span><span class="zh">AutoClip</span></div>
+      <h2 class="fade"><span class="en">See the valve. Navigate the clip. Discover what predicts the outcome.</span><span class="zh">看见瓣膜，导航夹子，发现什么决定结局。</span></h2>
+      <div class="grid grid-3" style="margin-top:2.5rem">
+        <div class="card fade d1">
+          <span class="tag tag-now">Now</span>
+          <h3><span class="en">See</span><span class="zh">看见</span></h3>
+          <p><span class="en">Fifteen structures on every frame of the live TEE: leaflet scallops, grippers, insertion points, papillary muscles, and the clip itself. Nothing changes in the workflow; it reads the ultrasound video output.</span><span class="zh">在实时 TEE 的每一帧上分割十五个结构：瓣叶分区、抓钳、插入点、乳头肌和夹子本身。工作流不变，只接超声的视频输出。</span></p>
+        </div>
+        <div class="card fade d2">
+          <span class="tag tag-next">Next</span>
+          <h3><span class="en">Navigate</span><span class="zh">导航</span></h3>
+          <p><span class="en">A TEER procedure comes down to three decisions. The operator still decides. AutoClip gives a number for each.</span><span class="zh">一台 TEER 归结为三个决策。决定权仍在术者，AutoClip 为每个决策给出一个数字。</span></p>
+          <ul class="decisions">
+            <li><b>A</b><span><span class="en">Is the clip in the right place?</span><span class="zh">夹子位置对吗？</span><em><span class="en">Position on the papillary-muscle axis</span><span class="zh">乳头肌轴上的内外侧位置</span></em></span></li>
+            <li><b>B</b><span><span class="en">Should the grippers drop?</span><span class="zh">该放抓钳了吗？</span><em><span class="en">Insertion of both leaflets</span><span class="zh">两侧瓣叶的插入</span></em></span></li>
+            <li><b>C</b><span><span class="en">Should we release?</span><span class="zh">可以释放了吗？</span><em><span class="en">Grasped leaflet length, both sides</span><span class="zh">两侧夹持瓣叶长度</span></em></span></li>
+          </ul>
+        </div>
+        <div class="card fade d3">
+          <span class="tag tag-star">North star</span>
+          <h3><span class="en">Discover</span><span class="zh">发现</span></h3>
+          <p><span class="en">Every new readout is a candidate biomarker. An outcome-linked registry tests which of them predicts the result a year later. Biomarkers that predict become thresholds; thresholds become guideline language.</span><span class="zh">每一个新读数都是候选生物标志物。结局关联登记库检验哪些能预测一年后的结果。能预测的成为阈值，阈值写进指南。</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ DEMO ============ -->
+  <section id="demo">
+    <div class="wrap">
+      <div class="label fade"><span class="en">Demo</span><span class="zh">演示</span></div>
+      <h2 class="fade"><span class="en">A real procedure, replayed with AutoClip on top.</span><span class="zh">真实手术回放，叠加 AutoClip。</span></h2>
+      <!-- Only de-identified footage may go here. Check every frame for patient name, ID, dates, hospital marks before adding. -->
+      <div class="demo-frame fade d1">
+        <!-- assets/autoclip-demo.mp4 = pitch deck v7 slide 7 cine, cropped to the two biplane panels (no machine text), no audio. -->
+        <video src="assets/autoclip-demo.mp4" poster="assets/autoclip-demo-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="De-identified intra-procedural biplane TEE with AutoClip segmentation overlay"></video>
+      </div>
+      <p class="demo-caption fade d2">
+        <span class="en">De-identified intra-procedural biplane TEE, replayed offline. Colours are AutoClip's segmentation of the leaflets, grippers and clip on every frame. Research prototype; not a clinical device.</span>
+        <span class="zh">去标识的术中双平面 TEE，离线回放。彩色区域为 AutoClip 在每一帧上对瓣叶、抓钳与夹子的分割。研究原型，非临床器械。</span>
+      </p>
+    </div>
+  </section>
+
+  <!-- ============ EVIDENCE ============ -->
+  <section id="evidence">
+    <div class="wrap">
+      <div class="label fade"><span class="en">Why us</span><span class="zh">为什么是我们</span></div>
+      <h2 class="fade"><span class="en">Built by an operator, on data no one else has.</span><span class="zh">由术者打造，建立在别人没有的数据上。</span></h2>
+      <ul class="ev" style="margin-top:2rem">
+        <li class="fade d1"><span class="k"><span class="en">Data</span><span class="zh">数据</span></span><span class="v"><b><span class="en">Multi-center intraoperative TEE from four centers in Europe and China.</span><span class="zh">来自欧洲与中国四个中心的术中 TEE。</span></b><p><span class="en">Around two thousand TEER procedures, used under center authorization. Chinese and international data are kept in separate pipelines for NMPA and FDA/CE.</span><span class="zh">约两千例 TEER，经各中心授权使用。中国与国际数据分管线保存，分别面向 NMPA 与 FDA/CE。</span></p></span></li>
+        <li class="fade d1"><span class="k"><span class="en">Outcomes</span><span class="zh">结局</span></span><span class="v"><b><span class="en">An outcome-linked cohort of 203 intra-procedural TEE studies.</span><span class="zh">203 例术中 TEE 的结局关联队列。</span></b><p><span class="en">Procedural and follow-up data in a registry-grade case report form, so every readout can be tested against what happened to the patient.</span><span class="zh">登记库级别的病例报告表，含手术与随访数据，每个读数都能对照患者真实结局检验。</span></p></span></li>
+        <li class="fade d2"><span class="k"><span class="en">Ground truth</span><span class="zh">标注</span></span><span class="v"><b><span class="en">The finest annotation in the field, with the expert ceiling measured first.</span><span class="zh">领域内最精细的标注，并先测出专家天花板。</span></b><p><span class="en">A written annotation protocol and a four-annotator inter-observer study, so the model is benchmarked against what experts can agree on.</span><span class="zh">成文的标注规范与四人标注者一致性研究，模型以专家能达成一致的水平为基准。</span></p></span></li>
+        <li class="fade d2"><span class="k"><span class="en">Recognition</span><span class="zh">认可</span></span><span class="v"><b><span class="en">Featured Innovation, TCT 2025, San Francisco.</span><span class="zh">TCT 2025（旧金山）Featured Innovation。</span></b><p><span class="en">Selected on the main stage of the largest interventional cardiology meeting while still a prototype.</span><span class="zh">仍是原型时即入选全球最大介入心脏病学会议的主舞台。</span></p></span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ TEAM ============ -->
+  <section id="team">
+    <div class="wrap">
+      <div class="label fade"><span class="en">Team</span><span class="zh">团队</span></div>
+      <h2 class="fade"><span class="en">The founder is the user.</span><span class="zh">创始人就是用户。</span></h2>
+      <div class="grid grid-3" style="margin-top:2.5rem">
+        <!-- Wording follows kmRyo/website/COMPLIANCE-NOTE.md: "fellow" next to Hirslanden, no Swiss-license claims. -->
+        <div class="person fade d1">
+          <div class="role"><span class="en">Founder & CEO</span><span class="zh">创始人 · CEO</span></div>
+          <h3>Mi Chen, MD PhD <span class="brand-sub">陈密</span></h3>
+          <p><span class="en">Interventional cardiologist with 1,700+ procedures behind her, TEER and TAVI operator. Trained as a cardiac surgeon at Fuwai Hospital, Beijing; structural heart fellow at Klinik Hirslanden Zürich; faculty at TCT, EuroPCR and PCR London Valves. Licensed physician in China.</span><span class="zh">介入心脏病医生，积累 1,700+ 例手术经验，TEER 与 TAVI 术者。北京阜外医院心脏外科训练；苏黎世 Hirslanden 医院结构性心脏病 Fellow；TCT、EuroPCR、PCR London Valves 讲者。中国执业医师。</span></p>
+        </div>
+        <div class="person fade d2">
+          <div class="role"><span class="en">Technical & operations advisor</span><span class="zh">技术与运营顾问</span></div>
+          <h3>Denis Samuylov, PhD</h3>
+          <p><span class="en">Computer vision PhD, ETH Zürich. Co-founder of GenAI Zurich.</span><span class="zh">苏黎世联邦理工学院计算机视觉博士，GenAI Zurich 联合创始人。</span></p>
+        </div>
+        <div class="person fade d3">
+          <div class="role"><span class="en">Research advisor</span><span class="zh">研究顾问</span></div>
+          <h3>Haotong Qin, PhD</h3>
+          <p><span class="en">Postdoctoral researcher, ETH Zürich. Efficient deep learning.</span><span class="zh">苏黎世联邦理工学院博士后，高效深度学习。</span></p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section id="contact" class="contact">
+    <div class="wrap">
+      <div class="label fade"><span class="en">Contact</span><span class="zh">联系</span></div>
+      <h2 class="fade"><span class="en">Operators, imaging teams and device makers: we are looking for validation partners.</span><span class="zh">术者、影像团队与器械厂商：我们正在寻找验证合作伙伴。</span></h2>
+      <div class="cta fade d1">
+        <a class="btn btn-fill" href="mailto:hello@turicor.com?subject=AutoClip"><span class="en">hello@turicor.com</span><span class="zh">hello@turicor.com</span></a>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <span>© 2026 Turicor · 心机智能</span>
+      <span><span class="en">Zürich · San Francisco · Beijing</span><span class="zh">苏黎世 · 旧金山 · 北京</span></span>
+    </div>
+    <p class="disclaimer">
+      <span class="en">AutoClip is a research prototype. It is not cleared or approved for clinical use by the FDA, the NMPA or any other regulator, and it does not replace the judgement of the treating physician.</span>
+      <span class="zh">AutoClip 为研究原型，尚未获得 FDA、NMPA 或任何其他监管机构的临床使用许可，不能替代主治医生的判断。</span>
+    </p>
+  </div>
+</footer>
+
+<script>
+const html = document.documentElement;
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (REDUCED) html.classList.add('reduced');
+
+/* ---- language ---- */
+const toggle = document.getElementById('langToggle');
+function setLang(l) {
+  html.dataset.lang = l; html.lang = l === 'zh' ? 'zh-CN' : 'en';
+  toggle.textContent = l === 'zh' ? 'EN' : '中文';
+  try { localStorage.setItem('turicor-lang', l); } catch (e) {}
+}
+toggle.addEventListener('click', () => setLang(html.dataset.lang === 'en' ? 'zh' : 'en'));
+try { const saved = localStorage.getItem('turicor-lang'); if (saved) setLang(saved); } catch (e) {}
+
+/* ---- loader: 心 → 机 → Heart → Machine → Turicor ---- */
+const loader = document.getElementById('loader');
+const loaderWord = document.getElementById('loaderWord');
+const WORDS = ['心', '机', 'Heart', 'Machine', 'Turicor'];
+let seen = false;
+try { seen = sessionStorage.getItem('turicor-intro') === '1'; } catch (e) {}
+function revealHero() {
+  requestAnimationFrame(() => { document.querySelectorAll('.hero .lines, .hero .fade').forEach(el => el.classList.add('in')); });
+}
+function finishLoader() {
+  loader.classList.add('done');
+  document.body.classList.remove('locked');
+  try { sessionStorage.setItem('turicor-intro', '1'); } catch (e) {}
+  setTimeout(() => loader.remove(), 1000);
+  revealHero();
+}
+if (REDUCED || seen) {
+  loader.remove(); document.body.classList.remove('locked'); revealHero();
+} else {
+  let i = 0;
+  const step = () => { i++; if (i < WORDS.length) { loaderWord.textContent = WORDS[i]; setTimeout(step, 240); } else setTimeout(finishLoader, 320); };
+  setTimeout(step, 650);
+}
+
+/* ---- scroll reveals ---- */
+const io = new IntersectionObserver(entries => {
+  entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
+}, { threshold: 0.15 });
+document.querySelectorAll('main > section:not(.hero) .lines, main > section:not(.hero) .fade').forEach(el => io.observe(el));
+
+/* ---- nav hide/show ---- */
+const nav = document.getElementById('nav');
+let lastY = 0;
+addEventListener('scroll', () => {
+  const y = scrollY;
+  nav.classList.toggle('solid', y > 40);
+  nav.classList.toggle('hide', y > 160 && y > lastY);
+  lastY = y;
+}, { passive: true });
+</script>
+</body>
+</html>
