@@ -3,6 +3,8 @@
 !/.gitignore
 !/index.html
 !/CNAME
+!/sitemap.xml
+!/robots.txt
 !/assets/
 !/assets/**
 .DS_Store
