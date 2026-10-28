@@ -23,6 +23,7 @@ Chinese name: **图灵心** (Noto Sans SC 500, tracking 0.24 em), used only in t
 | ink | `#1A1B1E` | wordmark on light backgrounds; icon background |
 | cream | `#ECEAE3` | wordmark on ink; icon glyph on ink / red |
 | seal | `#CE4A33` | the dot, and the single-colour red version |
+| ember | `#FF7A59` | **website accent since 2026-10-27** (on the deck green `#102C2A`; `#C4452B` on light backgrounds). On turicor.com the dot uses ember; the exported SVG/PNG files still carry seal |
 
 Rules: the wordmark is always one colour (cream on dark, ink on light). The dot is the only accent. No gradients, no shadows, no outlines. On a red background the dot becomes a hole. At 16 px the dot is dropped.
 

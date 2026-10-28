@@ -4,10 +4,10 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Turicor | Real-time AI reads the heart and guides repair</title>
-<meta name="description" content="Turicor builds AutoClip: real-time AI guidance for transcatheter heart valve repair, starting with mitral TEER. It reads the live ultrasound, maps the valve and the clip on every frame, and gives the operator a number for each decision. Research prototype.">
+<meta name="description" content="Turicor builds AutoClip: real-time AI that reads the live ultrasound during transcatheter valve repair and gives the operator a measurement for each decision. First indication: mitral TEER. Research prototype.">
 <link rel="canonical" href="https://www.turicor.com/">
 <meta property="og:title" content="Turicor | Real-time AI reads the heart and guides repair">
-<meta property="og:description" content="AutoClip reads the live ultrasound during mitral TEER and gives the operator a number for every clip decision. Built by an operator. Research prototype.">
+<meta property="og:description" content="AutoClip gives the operator a measurement where there was a guess, during catheter valve procedures. First indication: mitral TEER. Research prototype.">
 <meta property="og:url" content="https://www.turicor.com/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="Turicor">
@@ -16,208 +16,280 @@
 <meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Turicor | Real-time AI reads the heart and guides repair">
-<meta name="twitter:description" content="AutoClip reads the live ultrasound during mitral TEER and gives the operator a number for every clip decision.">
+<meta name="twitter:description" content="AutoClip gives the operator a measurement where there was a guess, during catheter valve procedures.">
 <meta name="twitter:image" content="https://www.turicor.com/assets/og-image.jpg">
+<meta name="theme-color" content="#102C2A">
 <link rel="icon" href="assets/brand/favicon.svg" type="image/svg+xml">
 <link rel="icon" href="assets/brand/favicon.ico" sizes="32x32">
 <link rel="apple-touch-icon" href="assets/brand/apple-touch-icon.png">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<!-- Fonts load without blocking first paint: fonts.googleapis.com is unreachable from mainland China, so the page must render on system fonts first. -->
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap" media="print" onload="this.media='all'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Sans+SC:wght@400;500;700&display=swap"></noscript>
+<!-- Fonts are self-hosted (Latin subsets, OFL) so the page looks the same in mainland China, where Google Fonts is blocked. Chinese falls back to system fonts. -->
+<link rel="preload" href="assets/fonts/Newsreader-Regular.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Manrope-Regular.woff2" as="font" type="font/woff2" crossorigin>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"Organization","name":"Turicor","alternateName":["Turicor AI","Turicor, Inc.","图灵心"],"url":"https://www.turicor.com/","logo":"https://www.turicor.com/assets/brand/2026-10-20_turicor_icon_v1_ink_512.png","email":"hello@turicor.com","description":"Real-time AI guidance for transcatheter heart valve repair, starting with mitral TEER (AutoClip). Research prototype.","founder":{"@type":"Person","name":"Mi Chen","jobTitle":"Founder & CEO","description":"Cardiac surgeon specializing in structural heart interventions, TEER and TAVI operator"},"knowsAbout":["transcatheter edge-to-edge repair","transesophageal echocardiography","structural heart intervention","medical image segmentation"]}
+{"@context":"https://schema.org","@type":"Organization","name":"Turicor","alternateName":["Turicor AI","图灵心"],"url":"https://www.turicor.com/","logo":"https://www.turicor.com/assets/brand/2026-10-20_turicor_icon_v1_ink_512.png","email":"hello@turicor.com","description":"Real-time AI that reads the heart and guides repair during transcatheter valve procedures, starting with mitral TEER (AutoClip). Research prototype.","founder":[{"@type":"Person","name":"Mi Chen","jobTitle":"Founder & CEO","description":"Cardiac surgeon specializing in structural heart interventions, TEER and TAVI operator"},{"@type":"Person","name":"Denis Samuylov","jobTitle":"Co-founder & CTO","description":"PhD in computer vision, ETH Zürich"}],"knowsAbout":["transcatheter edge-to-edge repair","transesophageal echocardiography","structural heart intervention","medical image segmentation"]}
 </script>
 <script>document.documentElement.classList.replace('no-js','js');</script>
 <style>
-/* ============ TOKENS ============ */
+/* ============ FONTS ============ */
+@font-face { font-family: "Newsreader"; src: url("assets/fonts/Newsreader-Regular.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Newsreader"; src: url("assets/fonts/Newsreader-Italic.woff2") format("woff2"); font-weight: 400; font-style: italic; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("assets/fonts/Manrope-SemiBold.woff2") format("woff2"); font-weight: 600; font-display: swap; }
+@font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Regular.woff2") format("woff2"); font-weight: 400; font-display: swap; }
+@font-face { font-family: "DM Mono"; src: url("assets/fonts/DMMono-Medium.woff2") format("woff2"); font-weight: 500; font-display: swap; }
+
+/* ============ TOKENS (deck v10 palette) ============ */
 :root {
-  --bg:      #1A1B1E;
-  --bg-2:    #202226;
-  --cream:   #ECEAE3;
-  --muted:   #A8A89E;
-  --faint:   #6E6E67;
-  --seal:    #CE4A33;
-  --seal-deep: #A8362B;
-  --hair:    rgba(236,234,227,0.16);
-  --hair-soft: rgba(236,234,227,0.08);
-  --now:     #7FB7A4;
-  --next:    #D9B36A;
-  --star:    #8E9BD6;
+  --ink:        #102C2A;   /* deep green, dark sections */
+  --ink-raise:  #173835;   /* cards on ink */
+  --ink-deep:   #030E0D;   /* image wells; matches the heart render background */
+  --paper:      #F3F3EE;   /* light sections */
+  --paper-raise:#FBFCF8;   /* cards on paper */
+  --on-ink:     #EEF1EC;
+  --on-ink-2:   #A3B3AF;
+  --on-ink-3:   #73817B;
+  --on-paper:   #102C2A;
+  --on-paper-2: #56686A;
+  --mint:       #A7E8CA;   /* numbers on ink */
+  --teal:       #0D5B55;   /* numbers on paper */
+  --ember:      #FF7A59;   /* the one accent, on ink */
+  --ember-ink:  #C4452B;   /* the same accent, darkened for paper */
+  --hair-ink:   rgba(238,241,236,0.14);
+  --hair-paper: rgba(16,44,42,0.14);
+  --serif: "Newsreader", "Songti SC", "Noto Serif SC", "STSong", Georgia, serif;
+  --sans:  "Manrope", -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+  --mono:  "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
 }
 
 /* ============ BASE ============ */
 * { box-sizing: border-box; margin: 0; padding: 0; }
-html { background: var(--bg); scroll-behavior: smooth; }
-body {
-  background: var(--bg); color: var(--cream);
-  font-family: "Instrument Sans", "Noto Sans SC", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
-  font-size: 1.02rem; line-height: 1.6;
-  -webkit-font-smoothing: antialiased; overflow-x: hidden;
-}
-html[data-lang="zh"] body { font-family: "Noto Sans SC", "Instrument Sans", -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; }
+html { background: var(--ink); scroll-behavior: smooth; }
+body { background: var(--ink); color: var(--on-ink); font-family: var(--sans); font-size: 1rem; line-height: 1.6; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; color: inherit; background: none; border: none; cursor: pointer; }
-:focus-visible { outline: 2px solid var(--cream); outline-offset: 4px; border-radius: 2px; }
-img, video { max-width: 100%; display: block; }
-::selection { background: var(--seal); color: var(--cream); }
+img, video, svg { max-width: 100%; display: block; }
+:focus-visible { outline: 2px solid var(--ember); outline-offset: 4px; border-radius: 2px; }
+::selection { background: var(--ember); color: var(--ink); }
 html[data-lang="en"] .zh { display: none !important; }
 html[data-lang="zh"] .en { display: none !important; }
 
-.wrap { max-width: 1180px; margin: 0 auto; padding: 0 clamp(1rem, 5vw, 3.5rem); }
-.label { font-size: 0.74rem; text-transform: uppercase; letter-spacing: 0.22em; color: var(--muted); font-weight: 500; }
-html[data-lang="zh"] .label { letter-spacing: 0.4em; }
-section { padding: clamp(3.5rem, 9vw, 7rem) 0; border-top: 1px solid var(--hair-soft); }
-h2 { font-size: clamp(1.65rem, 3.4vw, 2.5rem); font-weight: 500; line-height: 1.18; letter-spacing: -0.01em; margin: 0.8rem 0 1.2rem; max-width: 24ch; }
-h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.45rem; }
-p.lead { font-size: 1.12rem; color: var(--muted); max-width: 60ch; }
-.grid { display: grid; gap: 2rem; }
-.grid-3 { grid-template-columns: repeat(3, 1fr); }
-.grid-2 { grid-template-columns: 1fr 1fr; }
-@media (max-width: 860px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
-.grid > *, .hero-grid > *, .founder > *, .readouts > *, .stack > *, .path > *, .moat > * { min-width: 0; }
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 clamp(1rem, 5vw, 3.5rem); }
+section { padding: clamp(4rem, 10vw, 8rem) 0; }
+section.ink { background: var(--ink); color: var(--on-ink); }
+section.paper { background: var(--paper); color: var(--on-paper); }
+.grid { display: grid; gap: clamp(1.4rem, 3vw, 2.4rem); }
+.grid > * { min-width: 0; }
+
+/* label: mono, spaced caps, ember number */
+.label { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--on-ink-2); display: flex; gap: 0.9rem; align-items: baseline; }
+.label i { font-style: normal; color: var(--ember); }
+.paper .label { color: var(--on-paper-2); }
+.paper .label i { color: var(--ember-ink); }
+
+h1, h2 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.015em; }
+h1 { font-size: clamp(2.5rem, 6vw, 4.6rem); line-height: 1.03; margin: 1.3rem 0 1.4rem; }
+h1 em, h2 em { font-style: italic; color: var(--mint); }
+.paper h2 em { color: var(--teal); }
+h2 { font-size: clamp(2rem, 4.4vw, 3.4rem); line-height: 1.08; margin: 1.1rem 0 1.2rem; max-width: 18ch; }
+html[data-lang="zh"] h1, html[data-lang="zh"] h2 { letter-spacing: 0.01em; line-height: 1.2; max-width: 15em; }
+html[data-lang="zh"] h1 em, html[data-lang="zh"] h2 em, html[data-lang="zh"] .quote { font-style: normal; }
+h3 { font-family: var(--sans); font-weight: 600; font-size: 1.05rem; line-height: 1.25; }
+.lead { font-size: 1.1rem; color: var(--on-ink-2); max-width: 56ch; }
+.paper .lead { color: var(--on-paper-2); }
+.small { font-size: 0.9rem; }
+.mono { font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.14em; text-transform: uppercase; }
+
+/* reveals */
+html.js .fade { opacity: 0; transform: translateY(12px); transition: opacity 0.6s ease, transform 0.6s ease; }
+html.js .fade.in { opacity: 1; transform: none; }
+html.js .d1 { transition-delay: 0.07s; } html.js .d2 { transition-delay: 0.14s; } html.js .d3 { transition-delay: 0.21s; }
+html.reduced .fade { opacity: 1 !important; transform: none !important; transition: none; }
+
+/* buttons */
+.cta { display: flex; gap: 0.8rem; flex-wrap: wrap; }
+.btn { display: inline-flex; align-items: center; gap: 0.55rem; padding: 0.8rem 1.35rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; transition: background 0.2s, border-color 0.2s, transform 0.15s; }
+.btn-fill { background: var(--ember); color: var(--ink); }
+.btn-fill:hover { background: #FF916F; transform: translateY(-1px); }
+.btn-line { border: 1px solid var(--hair-ink); }
+.btn-line:hover { border-color: var(--on-ink); }
 
 /* ============ NAV ============ */
-#nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; transition: transform 0.4s ease, background 0.3s ease; background: transparent; }
-#nav.solid { background: color-mix(in srgb, var(--bg) 85%, transparent); backdrop-filter: blur(12px); }
+#nav { position: fixed; inset: 0 0 auto 0; z-index: 100; transition: transform 0.35s ease, background 0.3s ease; }
+#nav.solid { background: color-mix(in srgb, var(--ink) 88%, transparent); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--hair-ink); }
 #nav.hide { transform: translateY(-105%); }
-#nav .row { display: flex; align-items: center; gap: 1.6rem; padding: 1rem 0; }
-.brand { display: flex; align-items: center; gap: 0.7rem; margin-right: auto; font-weight: 500; }
-.brand img { height: 24px; width: auto; display: block; }
-.nav-links { display: flex; gap: 1.6rem; }
-.nav-links a { font-size: 0.92rem; color: var(--muted); }
-.nav-links a:hover { color: var(--cream); }
-.lang-toggle { border: 1px solid var(--hair); border-radius: 999px; padding: 0.32rem 0.95rem; font-size: 0.84rem; color: var(--cream); }
-.lang-toggle:hover { border-color: var(--cream); }
-@media (max-width: 860px) { .nav-links { display: none; } }
+#nav .row { display: flex; align-items: center; gap: 1.8rem; padding-top: 1rem; padding-bottom: 1rem; }
+.brand { margin-right: auto; color: var(--on-ink); display: flex; }
+.brand svg { height: 22px; width: auto; }
+.brand .dot { fill: var(--ember); }
+.nav-links { display: flex; gap: 1.6rem; font-size: 0.9rem; color: var(--on-ink-2); }
+.nav-links a:hover { color: var(--on-ink); }
+.lang-toggle { border: 1px solid var(--hair-ink); border-radius: 999px; padding: 0.3rem 0.9rem; font-size: 0.82rem; }
+.lang-toggle:hover { border-color: var(--on-ink); }
+@media (max-width: 880px) { .nav-links { display: none; } }
 
-/* ============ REVEALS (subtle, fast) ============ */
-html.js .fade { opacity: 0; transform: translateY(14px); transition: opacity 0.5s ease, transform 0.5s ease; }
-html.js .fade.in { opacity: 1; transform: none; }
-html.js .fade.d1 { transition-delay: 0.06s; } html.js .fade.d2 { transition-delay: 0.12s; } html.js .fade.d3 { transition-delay: 0.18s; }
-html.reduced .fade, html.no-js .fade { opacity: 1 !important; transform: none !important; transition: none; }
+/* ============ 1 · HERO ============ */
+.hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 7rem 0 3rem; }
+.hero-grid { grid-template-columns: 1fr 1.1fr; align-items: center; }
+.hero .lead { margin-bottom: 2rem; }
+.player { border-radius: 14px; overflow: hidden; background: #000; border: 1px solid var(--hair-ink); }
+.player video { width: 100%; aspect-ratio: 926/518; object-fit: contain; background: #000; }
+.player .bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 0.7rem 1rem; background: var(--ink-deep); color: var(--on-ink-3); }
+.player .bar b { color: var(--ember); font-weight: 500; }
+.proof { margin-top: clamp(3rem, 7vw, 5rem); border-top: 1px solid var(--hair-ink); grid-template-columns: repeat(4, 1fr); gap: 0; }
+.proof > div { padding: 1.3rem 1.4rem 0 0; }
+.proof > div + div { padding-left: 1.4rem; border-left: 1px solid var(--hair-ink); }
+.proof .n { font-family: var(--serif); font-size: clamp(1.6rem, 2.6vw, 2.2rem); line-height: 1.1; color: var(--mint); }
+.proof p { font-size: 0.86rem; color: var(--on-ink-2); margin-top: 0.4rem; }
+@media (max-width: 960px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .proof { grid-template-columns: 1fr 1fr; }
+  .proof > div:nth-child(3) { border-left: none; padding-left: 0; }
+  .proof > div { padding-bottom: 1.3rem; }
+}
 
-/* ============ HERO ============ */
-.hero { min-height: 100svh; display: grid; align-items: center; padding: 6.5rem 0 3rem; border-top: none; }
-.hero-grid { display: grid; grid-template-columns: 1.05fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
-@media (max-width: 960px) { .hero-grid { grid-template-columns: 1fr; } .hero { align-items: start; padding-top: 5.5rem; } }
-.hero h1 { font-size: clamp(2.2rem, 5vw, 3.9rem); font-weight: 500; line-height: 1.06; letter-spacing: -0.02em; margin: 1rem 0 1.3rem; }
-.hero h1 .em { color: var(--seal); }
-.hero p.lead { margin-bottom: 1.8rem; }
-.cta { display: flex; gap: 0.9rem; flex-wrap: wrap; align-items: center; }
-.btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.78rem 1.4rem; border-radius: 999px; font-weight: 600; font-size: 0.95rem; transition: transform 0.15s ease, background 0.2s ease, border-color 0.2s ease; }
-.btn-fill { background: var(--seal-deep); color: var(--cream); }
-.btn-fill:hover { background: var(--seal); transform: translateY(-1px); }
-.btn-line { border: 1px solid var(--hair); color: var(--cream); }
-.btn-line:hover { border-color: var(--cream); }
-.hero-meta { display: flex; gap: 2rem; flex-wrap: wrap; margin-top: 2.6rem; padding-top: 1.2rem; border-top: 1px solid var(--hair-soft); font-size: 0.86rem; color: var(--muted); }
-.hero-meta b { color: var(--cream); font-weight: 500; }
-.demo-frame { position: relative; aspect-ratio: 926/518; border-radius: 12px; overflow: hidden; background: #000; border: 1px solid var(--hair-soft); }
-.demo-frame video { width: 100%; height: 100%; object-fit: contain; }
-.demo-caption { margin-top: 0.8rem; color: var(--muted); font-size: 0.86rem; }
+/* ============ 2 · PROBLEM ============ */
+.stats { grid-template-columns: repeat(3, 1fr); margin-top: clamp(2.5rem, 5vw, 4rem); }
+.stat { border-top: 1px solid var(--hair-paper); padding-top: 1.2rem; }
+.stat .n { font-family: var(--serif); font-size: clamp(2.6rem, 5vw, 4rem); line-height: 1; color: var(--teal); }
+.stat .n small { font-size: 0.45em; margin-left: 0.2rem; }
+.stat p { color: var(--on-paper-2); margin-top: 0.8rem; font-size: 0.95rem; }
+.stat .src { display: block; margin-top: 0.7rem; color: var(--on-paper-2); opacity: 0.75; font-size: 0.66rem; }
+@media (max-width: 860px) { .stats { grid-template-columns: 1fr; } }
 
-/* ============ PROBLEM ============ */
-.stat { border-top: 1px solid var(--hair); padding-top: 1.1rem; }
-.stat .num { font-size: clamp(2.4rem, 4.6vw, 3.6rem); line-height: 1; color: var(--cream); font-weight: 500; letter-spacing: -0.02em; }
-.stat .num small { font-size: 0.42em; color: var(--muted); margin-left: 0.3rem; font-weight: 400; }
-.stat p { color: var(--muted); margin-top: 0.6rem; font-size: 0.94rem; }
+/* ============ 3 · PRODUCT ============ */
+.decisions { grid-template-columns: repeat(3, 1fr); margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+.decision { background: var(--ink-raise); border: 1px solid var(--hair-ink); border-radius: 14px; padding: 1.6rem 1.6rem 1.7rem; }
+.decision .k { font-family: var(--mono); color: var(--ember); font-size: 0.78rem; letter-spacing: 0.12em; }
+.decision h3 { font-family: var(--serif); font-weight: 400; font-size: 1.9rem; margin: 0.5rem 0 0.9rem; }
+.decision .q { color: var(--on-ink); font-size: 0.98rem; }
+.decision .today, .decision .ac { display: grid; grid-template-columns: 5.6rem 1fr; gap: 0.6rem; padding-top: 0.75rem; margin-top: 0.75rem; border-top: 1px solid var(--hair-ink); font-size: 0.9rem; color: var(--on-ink-2); }
+.decision .today > span:first-child, .decision .ac > span:first-child { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; padding-top: 0.2rem; }
+.decision .ac > span:first-child { color: var(--mint); }
+.decision .ac > span:last-child { color: var(--on-ink); }
+@media (max-width: 960px) { .decisions { grid-template-columns: 1fr; } }
 
-/* ============ PRODUCT ============ */
-.card { background: var(--bg-2); border: 1px solid var(--hair-soft); border-radius: 12px; padding: 1.7rem; }
-.card .tag { display: inline-block; font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; padding: 0.2rem 0.55rem; border-radius: 4px; margin-bottom: 0.9rem; font-weight: 600; }
-.tag-now { background: color-mix(in srgb, var(--now) 18%, transparent); color: var(--now); }
-.tag-next { background: color-mix(in srgb, var(--next) 18%, transparent); color: var(--next); }
-.tag-star { background: color-mix(in srgb, var(--star) 18%, transparent); color: var(--star); }
-.card h3 { font-size: 1.35rem; font-weight: 600; letter-spacing: 0.02em; }
-.card p { color: var(--muted); font-size: 0.96rem; }
-.decisions { list-style: none; margin-top: 0.9rem; }
-.decisions li { display: grid; grid-template-columns: 1.8rem 1fr; gap: 0.5rem; padding: 0.6rem 0; border-top: 1px solid var(--hair-soft); font-size: 0.94rem; }
-.decisions li b { color: var(--seal); font-size: 1.1rem; font-weight: 600; line-height: 1.3; }
-.decisions li span { color: var(--cream); }
-.decisions li em { display: block; color: var(--muted); font-style: normal; font-size: 0.86rem; }
-
-/* ============ READOUTS ============ */
-.readouts { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; margin-top: 2.2rem; }
-@media (max-width: 760px) { .readouts { grid-template-columns: 1fr; } }
-.readout { background: #000; border: 1px solid var(--hair-soft); border-radius: 12px; overflow: hidden; }
+.readouts { grid-template-columns: 1fr 1fr; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+.readout { border-radius: 14px; overflow: hidden; border: 1px solid var(--hair-ink); background: var(--ink-deep); }
 .readout img { width: 100%; aspect-ratio: 4/3; object-fit: contain; background: #000; }
-.readout figcaption { padding: 0.9rem 1.1rem 1.1rem; color: var(--muted); font-size: 0.9rem; background: var(--bg-2); }
-.readout figcaption b { color: var(--cream); display: block; font-size: 1rem; margin-bottom: 0.15rem; }
+.readout figcaption { padding: 1rem 1.2rem 1.2rem; font-size: 0.9rem; color: var(--on-ink-2); }
+.readout figcaption b { display: block; color: var(--on-ink); font-weight: 600; margin-bottom: 0.2rem; }
+.readout figcaption b span.v { color: var(--mint); font-family: var(--mono); font-weight: 500; }
+@media (max-width: 760px) { .readouts { grid-template-columns: 1fr; } }
 
-/* ============ EVIDENCE ============ */
-.ev { list-style: none; }
-.ev li { padding: 0.95rem 0; border-top: 1px solid var(--hair-soft); }
-.ev li b { font-weight: 600; display: block; }
-.ev li p { color: var(--muted); font-size: 0.92rem; margin-top: 0.15rem; }
-.ev-col h3 { color: var(--muted); font-size: 0.78rem; letter-spacing: 0.2em; text-transform: uppercase; font-weight: 500; margin-bottom: 0.4rem; }
-html[data-lang="zh"] .ev-col h3 { letter-spacing: 0.3em; }
+/* ============ 4 · IN THE CATH LAB ============ */
+.flow { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; align-items: stretch; gap: 0.9rem; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+.flow .box { background: var(--paper-raise); border: 1px solid var(--hair-paper); border-radius: 14px; padding: 1.3rem 1.4rem; }
+.flow .box.core { background: var(--ink); color: var(--on-ink); border-color: var(--ink); }
+.flow .box .mono { color: var(--on-paper-2); }
+.flow .box.core .mono { color: var(--ember); }
+.flow .box h3 { font-family: var(--serif); font-weight: 400; font-size: 1.45rem; margin: 0.45rem 0 0.4rem; }
+.flow .box p { font-size: 0.9rem; color: var(--on-paper-2); }
+.flow .box.core p { color: var(--on-ink-2); }
+.flow .arrow { align-self: center; color: var(--ember-ink); font-size: 1.4rem; }
+.notes { grid-template-columns: repeat(3, 1fr); margin-top: 2.2rem; }
+.notes div { border-top: 1px solid var(--hair-paper); padding-top: 0.9rem; font-size: 0.93rem; color: var(--on-paper-2); }
+.notes b { display: block; color: var(--on-paper); font-weight: 600; margin-bottom: 0.2rem; }
+@media (max-width: 860px) { .flow { grid-template-columns: 1fr; } .flow .arrow { transform: rotate(90deg); justify-self: center; } .notes { grid-template-columns: 1fr; } }
 
-/* ============ MOAT ============ */
-.moat { list-style: none; display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.2rem; margin-top: 2.2rem; }
-@media (max-width: 960px) { .moat { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 560px) { .moat { grid-template-columns: 1fr; } }
-.moat li { border-top: 1px solid var(--hair); padding-top: 0.9rem; font-size: 0.93rem; color: var(--muted); }
-.moat li b { display: block; color: var(--cream); font-weight: 600; margin-bottom: 0.25rem; }
-.flywheel { margin-top: 2.6rem; display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem 0.6rem; font-size: 0.9rem; color: var(--cream); }
-.flywheel span { background: var(--bg-2); border: 1px solid var(--hair-soft); border-radius: 999px; padding: 0.45rem 0.9rem; }
-.flywheel i { font-style: normal; color: var(--seal); font-weight: 600; }
+/* ============ 5 · EVIDENCE ============ */
+.ev-grid { grid-template-columns: 1.15fr 1fr; align-items: start; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+.nums { grid-template-columns: 1fr 1fr; gap: 0; }
+.nums > div { border-top: 1px solid var(--hair-ink); padding: 1.1rem 1.2rem 1.3rem 0; }
+.nums .n { font-family: var(--serif); font-size: clamp(2rem, 3.6vw, 2.8rem); line-height: 1; color: var(--mint); }
+.nums p { font-size: 0.88rem; color: var(--on-ink-2); margin-top: 0.5rem; }
+.photo { border-radius: 14px; overflow: hidden; border: 1px solid var(--hair-ink); background: var(--ink-deep); }
+.photo img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.photo figcaption { padding: 0.9rem 1.1rem 1.1rem; font-size: 0.88rem; color: var(--on-ink-2); }
+.photo figcaption b { color: var(--on-ink); font-weight: 600; }
+.status { grid-template-columns: repeat(3, 1fr); margin-top: clamp(3rem, 6vw, 4.5rem); }
+.status > div { background: var(--ink-raise); border: 1px solid var(--hair-ink); border-radius: 14px; padding: 1.4rem 1.5rem 1.5rem; }
+.status .mono { color: var(--mint); }
+.status .next .mono { color: var(--ember); }
+.status .not .mono { color: var(--on-ink-3); }
+.status ul { list-style: none; margin-top: 0.8rem; }
+.status li { padding: 0.45rem 0; border-top: 1px solid var(--hair-ink); font-size: 0.9rem; color: var(--on-ink-2); }
+.status li:first-child { border-top: none; }
+@media (max-width: 960px) { .ev-grid, .status { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .nums { grid-template-columns: 1fr; } }
 
-/* ============ FOUNDER ============ */
-.founder { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(1.8rem, 4vw, 3.5rem); align-items: start; margin-top: 2rem; }
-@media (max-width: 900px) { .founder { grid-template-columns: 1fr; } }
-.founder figure { border-radius: 12px; overflow: hidden; border: 1px solid var(--hair-soft); background: var(--bg-2); }
-.founder figure img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
-.founder figcaption { padding: 0.7rem 1rem; color: var(--muted); font-size: 0.84rem; }
-.founder .name { font-size: 1.35rem; font-weight: 600; margin-top: 0.3rem; }
-.founder .role { color: var(--seal); font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 600; }
-.founder p { color: var(--muted); margin-top: 0.7rem; font-size: 0.97rem; }
-.proof { list-style: none; margin-top: 1.1rem; }
-.proof li { padding: 0.55rem 0; border-top: 1px solid var(--hair-soft); font-size: 0.95rem; display: grid; grid-template-columns: 1.1rem 1fr; gap: 0.5rem; }
-.proof li::before { content: "·"; color: var(--seal); font-weight: 700; }
-.advisors { margin-top: 1.6rem; padding-top: 1rem; border-top: 1px solid var(--hair); font-size: 0.9rem; color: var(--muted); }
-.advisors b { color: var(--cream); font-weight: 500; }
-.advisors div { padding: 0.25rem 0; }
+/* ============ 6 · LINEAGE ============ */
+.line { grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: clamp(2.5rem, 5vw, 3.5rem); position: relative; }
+.line > div { padding: 1.6rem 1.6rem 0 0; position: relative; border-top: 1px solid var(--hair-paper); }
+.line > div::before { content: ""; position: absolute; top: -6px; left: 0; width: 11px; height: 11px; border-radius: 50%; background: var(--paper); border: 1px solid var(--on-paper-2); }
+.line > div.now::before { background: var(--ember-ink); border-color: var(--ember-ink); }
+.line .mono { color: var(--on-paper-2); }
+.line .now .mono { color: var(--ember-ink); }
+.line h3 { font-family: var(--serif); font-weight: 400; font-size: 1.6rem; margin: 0.4rem 0 0.5rem; }
+.line p { font-size: 0.93rem; color: var(--on-paper-2); max-width: 32ch; }
+@media (max-width: 860px) { .line { grid-template-columns: 1fr; } .line > div { padding-bottom: 1.6rem; } }
 
-/* ============ PLATFORM ============ */
-.path { list-style: none; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 2.2rem; counter-reset: step; }
-@media (max-width: 860px) { .path { grid-template-columns: 1fr; } }
-.path li { background: var(--bg-2); border: 1px solid var(--hair-soft); border-radius: 12px; padding: 1.3rem 1.3rem 1.4rem; position: relative; counter-increment: step; }
-.path li::before { content: counter(step, decimal-leading-zero); color: var(--seal); font-size: 0.78rem; letter-spacing: 0.15em; font-weight: 600; display: block; margin-bottom: 0.5rem; }
-.path li.first { border-color: color-mix(in srgb, var(--seal) 55%, transparent); }
-.path li b { display: block; font-weight: 600; font-size: 1.05rem; margin-bottom: 0.3rem; }
-.path li span { color: var(--muted); font-size: 0.9rem; }
+/* ============ 7 · TEAM ============ */
+.team { grid-template-columns: 1fr 1fr; margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+.person { display: grid; grid-template-columns: 9.5rem 1fr; gap: 1.4rem; align-items: start; border-top: 1px solid var(--hair-paper); padding-top: 1.5rem; }
+.person img { width: 100%; aspect-ratio: 5/6; object-fit: cover; border-radius: 10px; filter: saturate(0.9); }
+.person .role { font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ember-ink); }
+.person h3 { font-family: var(--serif); font-weight: 400; font-size: 1.7rem; margin: 0.3rem 0 0.6rem; }
+.person h3 small { font-family: var(--sans); font-size: 0.9rem; color: var(--on-paper-2); margin-left: 0.3rem; }
+.person ul { list-style: none; }
+.person li { font-size: 0.92rem; color: var(--on-paper-2); padding: 0.32rem 0 0.32rem 1rem; position: relative; }
+.person li::before { content: ""; position: absolute; left: 0; top: 0.85rem; width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+.live { grid-template-columns: 1.4fr 1fr; align-items: center; margin-top: clamp(3rem, 6vw, 4.5rem); }
+.live figure { border-radius: 14px; overflow: hidden; background: var(--ink); }
+.live img { width: 100%; aspect-ratio: 4/3; object-fit: cover; }
+.live figcaption { padding: 0.75rem 1rem; color: var(--on-ink-2); }
+@media (max-width: 860px) { .live { grid-template-columns: 1fr; } }
+.quote { font-family: var(--serif); font-style: italic; font-size: clamp(1.3rem, 2.4vw, 1.75rem); line-height: 1.35; max-width: 40ch; color: var(--on-paper); }
+.quote cite { display: block; font-family: var(--mono); font-style: normal; font-size: 0.7rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--on-paper-2); margin-top: 0.8rem; }
+@media (max-width: 960px) { .team { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .person { grid-template-columns: 6.5rem 1fr; gap: 1rem; } }
 
-/* ============ VISION ============ */
-.vision { background: var(--bg-2); }
-.vision h2 { max-width: 20ch; font-size: clamp(2rem, 4.4vw, 3.3rem); }
-.stack { display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 1rem; align-items: center; margin-top: 2.4rem; }
-@media (max-width: 860px) { .stack { grid-template-columns: 1fr; } .stack .arrow { transform: rotate(90deg); justify-self: center; } }
-.stack .box { border: 1px solid var(--hair); border-radius: 12px; padding: 1.2rem 1.3rem; font-size: 0.93rem; color: var(--muted); }
-.stack .box b { display: block; color: var(--cream); font-weight: 600; margin-bottom: 0.5rem; font-size: 0.78rem; letter-spacing: 0.18em; text-transform: uppercase; }
-.stack .box.core { border-color: var(--seal); background: color-mix(in srgb, var(--seal) 10%, transparent); color: var(--cream); }
-.stack .box div { padding: 0.12rem 0; }
-.stack .arrow { color: var(--seal); font-size: 1.4rem; text-align: center; }
+/* ============ 8 · VISION ============ */
+.vision-grid { grid-template-columns: 1fr 1fr; align-items: center; }
+.loop { width: 100%; max-width: 600px; margin: 0 auto; }
+.loop text { font-family: var(--serif); font-size: 21px; fill: var(--on-ink); }
+.loop text.sub { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.12em; fill: var(--on-ink-3); }
+.loop text.now { fill: var(--ember); }
+.loop .ring { fill: none; stroke: var(--hair-ink); stroke-width: 1; }
+.loop .arc { fill: none; stroke: var(--mint); stroke-width: 1.3; opacity: 0.75; }
+.loop .node { fill: var(--ink-raise); stroke: var(--on-ink-3); stroke-width: 1; }
+.loop .node.on { fill: var(--ember); stroke: var(--ember); }
+.loop .core { font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; fill: var(--on-ink-2); }
+.path { list-style: none; margin-top: 2rem; }
+.path li { display: grid; grid-template-columns: 6.5rem 1fr; gap: 1rem; padding: 0.75rem 0; border-top: 1px solid var(--hair-ink); font-size: 0.93rem; color: var(--on-ink-2); }
+.path li .mono { padding-top: 0.2rem; color: var(--on-ink-3); }
+.path li.now .mono { color: var(--ember); }
+.path li b { color: var(--on-ink); font-weight: 600; }
+@media (max-width: 960px) { .vision-grid { grid-template-columns: 1fr; } }
 
-/* ============ CONTACT / FOOTER ============ */
-.contact h2 { max-width: 30ch; }
-footer { padding: 2.4rem 0 3rem; border-top: 1px solid var(--hair-soft); font-size: 0.84rem; color: var(--faint); }
-footer .row { display: flex; justify-content: space-between; gap: 1.5rem; flex-wrap: wrap; }
-footer .disclaimer { max-width: 72ch; margin-top: 1rem; line-height: 1.55; }
+/* ============ 9 · CONTACT ============ */
+.routes { grid-template-columns: repeat(4, 1fr); margin-top: clamp(2.5rem, 5vw, 3.5rem); }
+.route { display: flex; flex-direction: column; background: var(--paper-raise); border: 1px solid var(--hair-paper); border-radius: 14px; padding: 1.4rem 1.4rem 1.3rem; transition: border-color 0.2s, transform 0.15s; }
+.route:hover { border-color: var(--ember-ink); transform: translateY(-2px); }
+.route .mono { color: var(--ember-ink); }
+.route h3 { font-family: var(--serif); font-weight: 400; font-size: 1.4rem; margin: 0.5rem 0 0.5rem; }
+.route p { font-size: 0.9rem; color: var(--on-paper-2); flex: 1; }
+.route .go { margin-top: 1.1rem; font-size: 0.86rem; font-weight: 600; color: var(--on-paper); }
+@media (max-width: 960px) { .routes { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .routes { grid-template-columns: 1fr; } }
+
+/* ============ FOOTER ============ */
+footer { background: var(--ink); color: var(--on-ink-3); padding: 3rem 0 3.5rem; font-size: 0.85rem; }
+footer .row { display: flex; justify-content: space-between; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+footer .brand svg { height: 18px; }
+footer .disclaimer { max-width: 76ch; margin-top: 1.4rem; line-height: 1.6; }
 </style>
 </head>
 <body>
-<noscript><style>.fade{opacity:1 !important;transform:none !important}</style></noscript>
 
 <header id="nav">
   <div class="wrap row">
-    <a class="brand" href="#top" aria-label="Turicor — home">
-      <img src="assets/brand/2026-10-20_turicor_wordmark_v1_cream.svg" alt="Turicor" width="91" height="24">
-    </a>
+    <a class="brand" href="#top" aria-label="Turicor, home"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455.5 120.0" role="img" aria-hidden="true"><g transform="translate(-8 10)"><path d="M20.5 0H79.5A2.5 2.5 0 0 1 82 2.5V9.5A2.5 2.5 0 0 1 79.5 12H20.5A2.5 2.5 0 0 1 18 9.5V2.5A2.5 2.5 0 0 1 20.5 0Z" fill="currentColor"/><path d="M46.5 14.5H53.5L73.6 89.8A81.5 81.5 0 0 1 26.4 89.8Z" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M44 10H56V14H44Z" fill="currentColor"/><circle cx="50" cy="79" r="5" class="dot"/></g><g transform="translate(76.78 110)" fill="currentColor"><path d="M32.22222222222222 1.3888888888888888Q24.86111111111111 1.3888888888888888 19.51388888888889 -1.7361111111111114Q14.166666666666668 -4.861111111111112 11.319444444444446 -10.277777777777779Q8.472222222222223 -15.694444444444445 8.472222222222223 -22.5V-70.83333333333334H25.972222222222225V-26.11111111111111Q25.972222222222225 -19.583333333333336 29.236111111111114 -16.25Q32.5 -12.916666666666668 38.47222222222222 -12.916666666666668Q43.88888888888889 -12.916666666666668 47.986111111111114 -15.416666666666668Q52.083333333333336 -17.916666666666668 54.51388888888889 -22.430555555555557Q56.94444444444445 -26.944444444444446 56.94444444444445 -32.63888888888889L58.75 -15.694444444444445Q55.27777777777778 -7.916666666666667 48.40277777777778 -3.2638888888888893Q41.52777777777778 1.3888888888888888 32.22222222222222 1.3888888888888888ZM57.5 0.0V-16.666666666666668H56.94444444444445V-70.83333333333334H74.58333333333334V0.0Z"/><path d="M89.72222222222221 0.0V-70.83333333333334H106.80555555555554V-53.75H107.22222222222221V0.0ZM107.22222222222221 -36.94444444444444 105.41666666666666 -53.75Q107.91666666666666 -62.77777777777778 113.88888888888889 -67.5Q119.8611111111111 -72.22222222222223 128.19444444444443 -72.22222222222223Q131.11111111111111 -72.22222222222223 132.36111111111111 -71.66666666666667V-55.13888888888889Q131.66666666666666 -55.41666666666667 130.41666666666666 -55.486111111111114Q129.16666666666666 -55.55555555555556 127.36111111111111 -55.55555555555556Q117.22222222222221 -55.55555555555556 112.22222222222221 -51.111111111111114Q107.22222222222221 -46.66666666666667 107.22222222222221 -36.94444444444444Z"/><path d="M139.30555555555554 0.0V-70.83333333333334H156.80555555555554V0.0ZM138.47222222222223 -82.5V-101.80555555555556H157.5V-82.5Z"/><path d="M202.36111111111111 1.3888888888888888Q191.66666666666669 1.3888888888888888 183.54166666666669 -3.333333333333333Q175.41666666666666 -8.055555555555555 170.76388888888889 -16.458333333333332Q166.11111111111111 -24.86111111111111 166.11111111111111 -35.55555555555556Q166.11111111111111 -46.25 170.76388888888889 -54.513888888888886Q175.41666666666666 -62.77777777777778 183.54166666666669 -67.5Q191.66666666666669 -72.22222222222223 202.36111111111111 -72.22222222222223Q211.11111111111111 -72.22222222222223 218.19444444444446 -68.95833333333334Q225.27777777777777 -65.69444444444444 229.86111111111111 -59.79166666666667Q234.44444444444446 -53.88888888888889 235.69444444444446 -46.111111111111114H218.88888888888889Q217.36111111111111 -51.80555555555556 213.05555555555554 -55.0Q208.75 -58.19444444444445 202.63888888888889 -58.19444444444445Q196.94444444444446 -58.19444444444445 192.84722222222223 -55.41666666666667Q188.75 -52.63888888888889 186.52777777777777 -47.5Q184.30555555555557 -42.361111111111114 184.30555555555557 -35.55555555555556Q184.30555555555557 -28.61111111111111 186.52777777777777 -23.47222222222222Q188.75 -18.333333333333336 192.91666666666669 -15.486111111111112Q197.08333333333334 -12.63888888888889 202.63888888888889 -12.63888888888889Q208.75 -12.63888888888889 213.05555555555554 -15.833333333333334Q217.36111111111111 -19.02777777777778 218.88888888888889 -24.722222222222225H235.69444444444446Q234.44444444444446 -16.944444444444446 229.79166666666669 -11.041666666666668Q225.13888888888889 -5.138888888888889 218.125 -1.8750000000000002Q211.11111111111111 1.3888888888888888 202.36111111111111 1.3888888888888888Z"/><path d="M276.6666666666667 1.3888888888888888Q265.4166666666667 1.3888888888888888 256.875 -3.333333333333333Q248.33333333333334 -8.055555555555555 243.61111111111111 -16.458333333333332Q238.88888888888889 -24.86111111111111 238.88888888888889 -35.69444444444444Q238.88888888888889 -46.52777777777778 243.61111111111111 -54.72222222222223Q248.33333333333334 -62.91666666666667 256.875 -67.56944444444446Q265.4166666666667 -72.22222222222223 276.6666666666667 -72.22222222222223Q288.05555555555554 -72.22222222222223 296.52777777777777 -67.56944444444446Q305.0 -62.91666666666667 309.72222222222223 -54.72222222222223Q314.44444444444446 -46.52777777777778 314.44444444444446 -35.69444444444444Q314.44444444444446 -24.86111111111111 309.65277777777777 -16.458333333333332Q304.8611111111111 -8.055555555555555 296.3888888888889 -3.333333333333333Q287.9166666666667 1.3888888888888888 276.6666666666667 1.3888888888888888ZM276.6666666666667 -12.63888888888889Q282.22222222222223 -12.63888888888889 286.66666666666663 -15.486111111111112Q291.1111111111111 -18.333333333333336 293.6111111111111 -23.541666666666668Q296.1111111111111 -28.75 296.1111111111111 -35.833333333333336Q296.1111111111111 -46.25 290.625 -52.22222222222223Q285.1388888888889 -58.19444444444445 276.6666666666667 -58.19444444444445Q268.19444444444446 -58.19444444444445 262.6388888888889 -52.22222222222223Q257.0833333333333 -46.25 257.0833333333333 -35.833333333333336Q257.0833333333333 -28.75 259.65277777777777 -23.541666666666668Q262.22222222222223 -18.333333333333336 266.59722222222223 -15.486111111111112Q270.97222222222223 -12.63888888888889 276.6666666666667 -12.63888888888889Z"/><path d="M323.88888888888886 0.0V-70.83333333333334H340.97222222222223V-53.75H341.38888888888886V0.0ZM341.38888888888886 -36.94444444444444 339.5833333333333 -53.75Q342.0833333333333 -62.77777777777778 348.05555555555554 -67.5Q354.02777777777777 -72.22222222222223 362.3611111111111 -72.22222222222223Q365.27777777777777 -72.22222222222223 366.52777777777777 -71.66666666666667V-55.13888888888889Q365.8333333333333 -55.41666666666667 364.5833333333333 -55.486111111111114Q363.3333333333333 -55.55555555555556 361.52777777777777 -55.55555555555556Q351.38888888888886 -55.55555555555556 346.38888888888886 -51.111111111111114Q341.38888888888886 -46.66666666666667 341.38888888888886 -36.94444444444444Z"/></g></svg></a>
     <nav class="nav-links" aria-label="Main">
       <a href="#product"><span class="en">Product</span><span class="zh">产品</span></a>
       <a href="#evidence"><span class="en">Evidence</span><span class="zh">证据</span></a>
-      <a href="#founder"><span class="en">Founder</span><span class="zh">创始人</span></a>
+      <a href="#team"><span class="en">Team</span><span class="zh">团队</span></a>
+      <a href="#vision"><span class="en">Vision</span><span class="zh">愿景</span></a>
       <a href="#contact"><span class="en">Contact</span><span class="zh">联系</span></a>
     </nav>
     <button class="lang-toggle" id="langToggle" aria-label="Switch language">中文</button>
@@ -226,236 +298,283 @@ footer .disclaimer { max-width: 72ch; margin-top: 1rem; line-height: 1.55; }
 
 <main id="top">
 
-  <!-- ============ 1. HERO ============ -->
-  <section class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <div class="label fade"><span class="en">AutoClip · AI for mitral TEER</span><span class="zh">AutoClip · 二尖瓣 TEER 术中 AI</span></div>
-        <h1 class="fade d1">
-          <span class="en">Real-time AI guidance for heart valve <span class="em">clipping</span>.</span>
-          <span class="zh">心脏瓣膜<span class="em">夹合</span>手术的实时 AI 导航。</span>
-        </h1>
-        <p class="lead fade d2">
-          <span class="en">In transcatheter edge-to-edge repair the operator works entirely through a live ultrasound image. AutoClip reads that image, maps the valve and the clip on every frame, and gives the operator a number for each decision. Starting with mitral TEER; built to extend across structural heart intervention.</span>
-          <span class="zh">经导管缘对缘修复（TEER）中，术者完全依靠一幅实时超声图像操作。AutoClip 读懂这幅图像，在每一帧上画出瓣膜与夹子，并为每一个决策给出一个数字。从二尖瓣 TEER 起步，架构可扩展到整个结构性心脏介入。</span>
-        </p>
-        <div class="cta fade d3">
-          <a class="btn btn-fill" href="#demo"><span class="en">Watch AutoClip work</span><span class="zh">看 AutoClip 运行</span></a>
-          <a class="btn btn-line" href="#contact"><span class="en">Talk to us</span><span class="zh">联系我们</span></a>
+  <!-- ============ 1 · HERO: what it is, and proof it is real ============ -->
+  <section class="ink hero">
+    <div class="wrap">
+      <div class="grid hero-grid">
+        <div>
+          <div class="label fade"><span>AutoClip</span><span class="en">· First indication: mitral TEER</span><span class="zh">· 首个适应症：二尖瓣 TEER</span></div>
+          <h1 class="fade d1">
+            <span class="en">Real-time AI <em>reads the heart</em> and guides repair.</span>
+            <span class="zh">实时 AI <em>读懂心脏</em>，引导瓣膜修复。</span>
+          </h1>
+          <p class="lead fade d2">
+            <span class="en">During a catheter valve repair the operator steers by live ultrasound, and every decision is made by eye. AutoClip reads that image and gives the operator a measurement where there was a guess.</span>
+            <span class="zh">经导管瓣膜修复中，术者靠实时超声操作，每一个决策都凭肉眼。AutoClip 读懂这幅图像，在原来靠猜的地方给术者一个测量值。</span>
+          </p>
+          <div class="cta fade d3">
+            <a class="btn btn-fill" href="#product"><span class="en">See how it works</span><span class="zh">看它怎么工作</span></a>
+            <a class="btn btn-line" href="#contact"><span class="en">Talk to us</span><span class="zh">联系我们</span></a>
+          </div>
         </div>
-        <div class="hero-meta fade d3">
-          <span><b>TCT 2025</b> Featured Innovation</span>
-          <span><b>~2,000</b> <span class="en">TEER procedures, 4 centers</span><span class="zh">例 TEER · 4 个中心</span></span>
-          <span><b><span class="en">Built by an operator</span><span class="zh">由术者打造</span></b></span>
-        </div>
+        <figure class="player fade d2" id="demo">
+          <!-- assets/autoclip-demo.mp4: de-identified intra-procedural biplane TEE, cropped to the two imaging sectors, no machine text, no audio (checked 2026-10-06). -->
+          <video src="assets/autoclip-demo.mp4" poster="assets/autoclip-demo-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="De-identified intra-procedural biplane TEE with AutoClip segmentation overlay"></video>
+          <figcaption class="bar mono"><span><b>●</b> <span class="en">Offline replay · recorded procedure</span><span class="zh">离线回放 · 真实手术录像</span></span><span class="en">Not for clinical use</span><span class="zh">非临床使用</span></figcaption>
+        </figure>
       </div>
-      <div class="fade d1">
-        <div class="demo-frame" id="demo">
-          <!-- assets/autoclip-demo.mp4: de-identified intra-procedural biplane TEE, cropped to the two imaging panels, no machine text, no audio. -->
-          <video src="assets/autoclip-demo.mp4" poster="assets/autoclip-demo-poster.jpg" autoplay muted loop playsinline controls preload="metadata" aria-label="De-identified intra-procedural biplane TEE with AutoClip segmentation overlay"></video>
-        </div>
-        <p class="demo-caption">
-          <span class="en">Real intra-procedural biplane TEE, replayed offline. Colours are AutoClip's segmentation of leaflets, grippers and clip on every frame. Not a mock-up.</span>
-          <span class="zh">真实术中双平面 TEE，离线回放。彩色区域为 AutoClip 在每一帧上对瓣叶、抓钳与夹子的分割。不是示意图。</span>
-        </p>
+      <div class="grid proof fade d3">
+        <div><div class="n">TCT 2025</div><p><span class="en">Featured Innovation, San Francisco, while still a prototype</span><span class="zh">旧金山 Featured Innovation，原型阶段即入选</span></p></div>
+        <div><div class="n">~2,000</div><p><span class="en">TEER procedures from four centres, under data-use authorizations</span><span class="zh">例 TEER，来自四个中心，经数据使用授权</span></p></div>
+        <div><div class="n">≈1.5 mm</div><p><span class="en">clip-position error against expert labels, 34 held-out patients</span><span class="zh">夹子位置与专家标注的误差，34 位留出验证患者</span></p></div>
+        <div><div class="n">12 / 12</div><p><span class="en">centres shown the demo asked to join external validation</span><span class="zh">看过演示的中心全部要求参加外部验证</span></p></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ 2. PROBLEM ============ -->
-  <section id="problem">
+  <!-- ============ 2 · PROBLEM ============ -->
+  <section class="paper" id="problem">
     <div class="wrap">
-      <div class="label fade"><span class="en">The problem</span><span class="zh">问题</span></div>
-      <h2 class="fade"><span class="en">Every TEER decision is made by eye.</span><span class="zh">TEER 的每一个决策都靠肉眼。</span></h2>
-      <p class="lead fade d1">
-        <span class="en">Where to clip, how deep to grasp, when to release: on today's screen there is not a single number. The knowledge that turns a grey image into those decisions lives inside the heads of a few experienced operators. That is why the learning curve is long, why results vary between operators, and why most hospitals cannot start.</span>
-        <span class="zh">夹在哪里、抓多深、何时释放：今天的屏幕上没有一个数字。把灰白图像变成这些决策的知识，只存在于少数资深术者的脑子里。这就是学习曲线长、术者之间结果不一、多数医院开展不了的原因。</span>
+      <div class="label fade"><i>01</i><span class="en">The problem</span><span class="zh">问题</span></div>
+      <h2 class="fade d1"><span class="en">Every TEER decision is still <em>made by eye.</em></span><span class="zh">TEER 的每一个决策，仍然<em>靠肉眼。</em></span></h2>
+      <p class="lead fade d2">
+        <span class="en">Where to place the clip, when to grasp, whether to release. The operator reads a grey, moving image, and there is not a single number on the screen. The result decides the patient's outcome, and the result depends on who operates.</span>
+        <span class="zh">夹子放在哪、何时抓、能不能释放。术者读的是一幅灰色的动态图像，屏幕上没有一个数字。结果决定患者的结局，而结果取决于谁在做。</span>
       </p>
-      <div class="grid grid-3" style="margin-top:2.6rem">
+      <div class="grid stats">
         <div class="stat fade d1">
-          <div class="num">0</div>
-          <p><span class="en">numbers on the operator's screen during a clip procedure today.</span><span class="zh">今天的夹合手术中，术者屏幕上的数字个数。</span></p>
+          <div class="n">2–4<small>mm</small></div>
+          <p><span class="en">disagreement between four experienced specialists on the same frame and the same landmark: the papillary muscle that decides clip position.</span><span class="zh">四位资深专家在同一帧、同一解剖标志上的分歧。这个标志是决定夹子位置的乳头肌。</span></p>
+          <span class="src mono"><span class="en">Turicor inter-observer study</span><span class="zh">Turicor 观察者间一致性研究</span></span>
         </div>
         <div class="stat fade d2">
-          <div class="num">2–4<small>mm</small></div>
-          <p><span class="en">disagreement between four experts on where the medial papillary muscle is, independent of image quality. We measured it before training anything.</span><span class="zh">四位专家对内侧乳头肌位置的分歧，与图像质量无关。我们在训练任何模型之前先测了这个数。</span></p>
+          <div class="n">38<small>%</small> <span style="font-size:0.45em">vs</span> 72<small>%</small></div>
+          <p><span class="en">death or heart-failure hospitalisation by two years, when residual leak after the procedure is minimal (≤1+) versus severe (≥3+).</span><span class="zh">术后残余反流轻微（≤1+）与严重（≥3+）的患者，两年内死亡或心衰住院的比例。</span></p>
+          <span class="src mono">COAPT · Kar et al., Circulation 2021</span>
         </div>
         <div class="stat fade d3">
-          <div class="num">300k<small>+</small></div>
-          <p><span class="en">patients treated with mitral clips worldwide, still the fastest-growing structural heart procedure.</span><span class="zh">全球二尖瓣夹合治疗患者数，仍是增长最快的结构心手术。</span></p>
+          <div class="n">64<small>%</small> → 75<small>%</small></div>
+          <p><span class="en">optimal procedural success from an operator's first 25 cases to 50+. Most centres never reach fifty cases a year.</span><span class="zh">术者前 25 例到 50 例以上的最佳手术成功率。多数中心一年做不到 50 例。</span></p>
+          <span class="src mono">STS/ACC TVT Registry · Chhatriwalla et al., JACC 2019</span>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ============ 3. SEE / MEASURE / GUIDE ============ -->
-  <section id="product">
+  <!-- ============ 3 · PRODUCT: the three decisions ============ -->
+  <section class="ink" id="product">
     <div class="wrap">
-      <div class="label fade"><span class="en">AutoClip</span><span class="zh">AutoClip</span></div>
-      <h2 class="fade"><span class="en">We taught software to see what the operator sees.</span><span class="zh">我们教软件看懂术者看到的东西。</span></h2>
-      <p class="lead fade d1"><span class="en">It runs on the ultrasound machine's video output. Nothing changes in the workflow, any clip, any echo vendor.</span><span class="zh">接超声机的视频输出。工作流不变，任何夹子、任何超声厂商都适用。</span></p>
-      <div class="grid grid-3" style="margin-top:2.2rem">
-        <div class="card fade d1">
-          <span class="tag tag-now">Now</span>
-          <h3><span class="en">See</span><span class="zh">看见</span></h3>
-          <p><span class="en">Fifteen structures on every frame of intraoperative TEE: leaflet scallops, grippers, insertion points, papillary muscles, and the clip itself.</span><span class="zh">在术中 TEE 的每一帧上分割十五个结构：瓣叶分区、抓钳、插入点、乳头肌和夹子本身。</span></p>
-        </div>
-        <div class="card fade d2">
-          <span class="tag tag-now">Now</span>
-          <h3><span class="en">Measure</span><span class="zh">测量</span></h3>
-          <p><span class="en">A TEER procedure comes down to three decisions. AutoClip gives a number for each, computed on recorded procedures today.</span><span class="zh">一台 TEER 归结为三个决策。AutoClip 为每个决策给出一个数字，今天已在回放病例上运行。</span></p>
-          <ul class="decisions">
-            <li><b>A</b><span><span class="en">Is the clip in the right place?</span><span class="zh">夹子位置对吗？</span><em><span class="en">Position on the papillary-muscle axis</span><span class="zh">乳头肌轴上的内外侧位置</span></em></span></li>
-            <li><b>B</b><span><span class="en">Should the grippers drop?</span><span class="zh">该放抓钳了吗？</span><em><span class="en">Insertion of both leaflets</span><span class="zh">两侧瓣叶的插入</span></em></span></li>
-            <li><b>C</b><span><span class="en">Should we release?</span><span class="zh">可以释放了吗？</span><em><span class="en">Grasped leaflet length, both sides</span><span class="zh">两侧夹持瓣叶长度</span></em></span></li>
-          </ul>
-        </div>
-        <div class="card fade d3">
-          <span class="tag tag-next">Next · 6 months</span>
-          <h3><span class="en">Guide</span><span class="zh">导航</span></h3>
-          <p><span class="en">The same model on the live video feed of the echo machine, in the room, during the procedure. External validation at two centers. The operator still decides; the screen finally shows a number.</span><span class="zh">同一个模型接到超声机的实时视频流，在手术室里、手术中运行。两个中心外部验证。决定权仍在术者，屏幕上终于有了数字。</span></p>
-        </div>
+      <div class="label fade"><i>02</i><span>AutoClip</span></div>
+      <h2 class="fade d1"><span class="en">A number where there <em>was a guess.</em></span><span class="zh">原来靠猜的地方，<em>现在有一个数字。</em></span></h2>
+      <p class="lead fade d2">
+        <span class="en">AutoClip segments 15 structures on every frame of the live echo (leaflet scallops, grippers, insertion points, papillary muscles, the clip) and turns them into a measurement for each of the three decisions. Decision support, not decision replacement: the operator stays in control.</span>
+        <span class="zh">AutoClip 在实时超声的每一帧上分割 15 个结构（瓣叶分区、抓钳、插入点、乳头肌、夹子），把它们变成三个决策各自的测量值。辅助决策，不替代决策：控制权始终在术者手里。</span>
+      </p>
+      <div class="grid decisions">
+        <article class="decision fade d1">
+          <div class="k">01</div>
+          <h3><span class="en">Position</span><span class="zh">定位</span></h3>
+          <p class="q"><span class="en">Is the clip on target?</span><span class="zh">夹子对准目标了吗？</span></p>
+          <div class="today"><span><span class="en">Today</span><span class="zh">现在</span></span><span><span class="en">Estimated from two planes by eye.</span><span class="zh">凭肉眼从两个切面估计。</span></span></div>
+          <div class="ac"><span>AutoClip</span><span><span class="en">Clip trajectory onto the target, in both planes.</span><span class="zh">夹子在两个切面上相对目标的轨迹。</span></span></div>
+        </article>
+        <article class="decision fade d2">
+          <div class="k">02</div>
+          <h3><span class="en">Grasp</span><span class="zh">夹持</span></h3>
+          <p class="q"><span class="en">Are both leaflets inside?</span><span class="zh">两侧瓣叶都夹进去了吗？</span></p>
+          <div class="today"><span><span class="en">Today</span><span class="zh">现在</span></span><span><span class="en">Judged on a moving image.</span><span class="zh">在动态图像上判断。</span></span></div>
+          <div class="ac"><span>AutoClip</span><span><span class="en">Insertion depth of each leaflet inside the clip, in millimetres.</span><span class="zh">每侧瓣叶在夹子内的插入深度，以毫米计。</span></span></div>
+        </article>
+        <article class="decision fade d3">
+          <div class="k">03</div>
+          <h3><span class="en">Release</span><span class="zh">释放</span></h3>
+          <p class="q"><span class="en">Is the result good enough to let go?</span><span class="zh">结果够好，可以释放了吗？</span></p>
+          <div class="today"><span><span class="en">Today</span><span class="zh">现在</span></span><span><span class="en">A judgement call, case by case.</span><span class="zh">逐例凭经验判断。</span></span></div>
+          <div class="ac"><span>AutoClip</span><span><span class="en">Five release criteria, each checked before letting go.</span><span class="zh">五项释放标准，逐项核对后再释放。</span></span></div>
+        </article>
       </div>
-    </div>
-  </section>
-
-  <!-- ============ 4. READOUTS ============ -->
-  <section id="readouts">
-    <div class="wrap">
-      <div class="label fade"><span class="en">Readouts</span><span class="zh">读数</span></div>
-      <h2 class="fade"><span class="en">A number where there was a guess.</span><span class="zh">原来靠猜的地方，现在有一个数字。</span></h2>
-      <p class="lead fade d1"><span class="en">Two of the three readouts, drawn on real frames from recorded procedures. Not mock-ups.</span><span class="zh">三个读数中的两个，画在真实回放病例的帧上。不是示意图。</span></p>
-      <div class="readouts">
+      <div class="grid readouts">
         <!-- assets/readout-m1.jpg / readout-m2.jpg: de-identified single TEE frames with AutoClip overlays, from the clinical-metrics report. -->
         <figure class="readout fade d1">
           <img src="assets/readout-m1.jpg" alt="TEE frame with AutoClip overlay: anterior leaflet, gripper and grasped zone segmented; grasped leaflet length reads 4.8 mm" loading="lazy">
-          <figcaption><b><span class="en">Grasped leaflet length · 4.8 mm</span><span class="zh">夹持瓣叶长度 · 4.8 mm</span></b><span class="en">How much leaflet the clip is holding. The operator's target is 4–5 mm; today it is judged by eye.</span><span class="zh">夹子抓住了多少瓣叶。术者的目标是 4–5 mm，今天靠眼睛估。</span></figcaption>
+          <figcaption><b><span class="en">Grasped leaflet length</span><span class="zh">夹持瓣叶长度</span> · <span class="v">4.8 mm</span></b><span class="en">How much leaflet the clip is holding. Operators aim for 4–5 mm; today it is judged by eye.</span><span class="zh">夹子抓住了多少瓣叶。术者的目标是 4–5 mm，今天靠眼睛估。</span></figcaption>
         </figure>
         <figure class="readout fade d2">
           <img src="assets/readout-m2.jpg" alt="TEE frame with AutoClip overlay: clip, medial and lateral papillary muscles segmented; clip position on the papillary-muscle axis reads t = 0.54" loading="lazy">
-          <figcaption><b><span class="en">Clip position · t = 0.54</span><span class="zh">夹子位置 · t = 0.54</span></b><span class="en">Where the clip sits on the axis between the two papillary muscles. Anchored to anatomy, so it does not change with the probe angle.</span><span class="zh">夹子在两乳头肌连线上的位置。以解剖为锚，不随探头角度变化。</span></figcaption>
+          <figcaption><b><span class="en">Clip position</span><span class="zh">夹子位置</span> · <span class="v">t = 0.54</span></b><span class="en">Where the clip sits between the two papillary muscles. Anchored to anatomy, so it does not change with the probe angle.</span><span class="zh">夹子在两组乳头肌之间的位置。以解剖为锚，不随探头角度变化。</span></figcaption>
         </figure>
       </div>
     </div>
   </section>
 
-  <!-- ============ 5. EVIDENCE ============ -->
-  <section id="evidence">
+  <!-- ============ 4 · IN THE CATH LAB ============ -->
+  <section class="paper" id="lab">
     <div class="wrap">
-      <div class="label fade"><span class="en">Evidence</span><span class="zh">证据</span></div>
-      <h2 class="fade"><span class="en">Working prototype, built on data no one else has.</span><span class="zh">可运行的原型，建立在别人没有的数据上。</span></h2>
-      <div class="grid grid-2" style="margin-top:2rem">
-        <div class="ev-col fade d1">
-          <h3><span class="en">Progress</span><span class="zh">进展</span></h3>
-          <ul class="ev">
-            <li><b><span class="en">~2,000 TEER procedures from four centers in Europe and China.</span><span class="zh">来自欧洲与中国四个中心的约 2,000 例 TEER。</span></b><p><span class="en">Intraoperative TEE under data-use authorization. Chinese and international data are kept in separate pipelines for NMPA and FDA/CE.</span><span class="zh">术中 TEE，经各中心授权使用。中国与国际数据分管线保存，分别面向 NMPA 与 FDA/CE。</span></p></li>
-            <li><b><span class="en">235 patients annotated, ~10,000 labelled frames.</span><span class="zh">已标注 235 例，约 10,000 帧。</span></b><p><span class="en">Under a written annotation protocol with a four-annotator inter-observer study, so the model is measured against a known expert ceiling.</span><span class="zh">按书面标注规程执行，并做了四标注者一致性研究，模型对标的是已知的专家天花板。</span></p></li>
-            <li><b><span class="en">15-class segmentation and two clinical readouts running on recorded procedures.</span><span class="zh">15 类分割与两个临床读数已在回放病例上运行。</span></b><p><span class="en">Trained on multi-center data; readouts computed at native resolution with per-study pixel calibration.</span><span class="zh">多中心数据训练；读数在原生分辨率下、按每例像素标定计算。</span></p></li>
-            <li><b><span class="en">An outcome-linked cohort of 203 intra-procedural TEE studies.</span><span class="zh">203 例术中 TEE 的结局关联队列。</span></b><p><span class="en">Registry-grade procedural and follow-up data, so every readout can be tested against what happened to the patient a year later.</span><span class="zh">登记库级别的手术与随访数据，每个读数都能对照患者一年后的真实结局来检验。</span></p></li>
-          </ul>
-        </div>
-        <div class="ev-col fade d2">
-          <h3><span class="en">Recognition</span><span class="zh">认可</span></h3>
-          <ul class="ev">
-            <li><b><span class="en">Featured Innovation, TCT 2025, San Francisco.</span><span class="zh">TCT 2025（旧金山）Featured Innovation。</span></b><p><span class="en">Selected for the main stage of the largest interventional cardiology meeting while still a prototype.</span><span class="zh">仍是原型时即入选全球最大介入心脏病学会议的主舞台。</span></p></li>
-            <li><b><span class="en">Founder on faculty at TCT, EuroPCR and PCR London Valves.</span><span class="zh">创始人为 TCT、EuroPCR、PCR London Valves 讲者。</span></b><p><span class="en">The three meetings where structural heart practice is set.</span><span class="zh">结构性心脏病领域定调的三个会议。</span></p></li>
-            <li><b><span class="en">Research prototype. Not yet in clinical use.</span><span class="zh">研究原型，尚未进入临床使用。</span></b><p><span class="en">No regulatory clearance has been sought or granted. We say so on every page.</span><span class="zh">尚未申请或获得任何监管许可。每一页都写明。</span></p></li>
-          </ul>
-        </div>
+      <div class="label fade"><i>03</i><span class="en">In the cath lab</span><span class="zh">在导管室里</span></div>
+      <h2 class="fade d1"><span class="en">Nothing in the room <em>has to change.</em></span><span class="zh">导管室里<em>什么都不用改。</em></span></h2>
+      <div class="flow fade d2">
+        <div class="box"><span class="mono"><span class="en">In</span><span class="zh">输入</span></span><h3><span class="en">Echo machine</span><span class="zh">超声机</span></h3><p><span class="en">The video output it already has. Any vendor.</span><span class="zh">它本来就有的视频输出。任何厂商。</span></p></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="box core"><span class="mono">AutoClip</span><h3><span class="en">A GPU box in the lab</span><span class="zh">导管室里的一台 GPU 盒子</span></h3><p><span class="en">Reads every frame. No hospital network, no cloud.</span><span class="zh">逐帧读图。不接医院网络，不上云。</span></p></div>
+        <div class="arrow" aria-hidden="true">→</div>
+        <div class="box"><span class="mono"><span class="en">Out</span><span class="zh">输出</span></span><h3><span class="en">A second screen</span><span class="zh">第二块屏幕</span></h3><p><span class="en">Measurements next to the live image the operator already watches.</span><span class="zh">测量值显示在术者本来就在看的实时图像旁边。</span></p></div>
+      </div>
+      <div class="grid notes fade d3">
+        <div><b><span class="en">Any clip</span><span class="zh">任何夹子</span></b><span class="en">Device-agnostic. Built first for the clip with most of the market.</span><span class="zh">不绑定器械。首先适配市场份额最大的夹子。</span></div>
+        <div><b><span class="en">Any echo vendor</span><span class="zh">任何超声厂商</span></b><span class="en">Works from the standard video signal, not a vendor interface.</span><span class="zh">读取标准视频信号，不依赖厂商接口。</span></div>
+        <div><b><span class="en">Today: offline replay</span><span class="zh">现在：离线回放</span></b><span class="en">Running on recorded procedures now. Real-time on the live feed is the next build.</span><span class="zh">目前在录像病例上运行。接实时视频流是下一步。</span></div>
       </div>
     </div>
   </section>
 
-  <!-- ============ 6. MOAT ============ -->
-  <section id="moat">
+  <!-- ============ 5 · EVIDENCE + STATUS ============ -->
+  <section class="ink" id="evidence">
     <div class="wrap">
-      <div class="label fade"><span class="en">Why it is hard to copy</span><span class="zh">为什么难以复制</span></div>
-      <h2 class="fade"><span class="en">Hard to copy, by design.</span><span class="zh">从设计上就难以复制。</span></h2>
-      <ul class="moat">
-        <li class="fade d1"><b><span class="en">Procedural data</span><span class="zh">术中数据</span></b><span class="en">Intraoperative TEE from real clip procedures is rare and never leaves the hospital without an operator who is trusted there.</span><span class="zh">真实夹合手术的术中 TEE 很稀缺，没有医院信任的术者，数据根本出不来。</span></li>
-        <li class="fade d1"><b><span class="en">Expert ground truth</span><span class="zh">专家级标注</span></b><span class="en">Labels defined by interventionalists, with the expert ceiling measured first, so we know what "correct" means.</span><span class="zh">标签由介入医生定义，先测出专家天花板，才知道「正确」是什么。</span></li>
-        <li class="fade d2"><b><span class="en">Procedural ontology</span><span class="zh">术式本体</span></b><span class="en">Not just anatomy: anatomy, device, phase and their interaction, written down as the three decisions of the procedure.</span><span class="zh">不只是解剖：解剖、器械、阶段及其相互关系，被写成手术的三个决策。</span></li>
-        <li class="fade d2"><b><span class="en">Outcome link</span><span class="zh">结局关联</span></b><span class="en">A registry that tells us which readouts predict the result a year later. Readouts that predict become thresholds; thresholds become guideline language.</span><span class="zh">登记库告诉我们哪些读数能预测一年后的结果。能预测的成为阈值，阈值写进指南。</span></li>
-        <li class="fade d3"><b><span class="en">Workflow fit</span><span class="zh">工作流适配</span></b><span class="en">Designed in the cath lab by someone who stands there. Video in, numbers on screen, nothing else to touch.</span><span class="zh">由站在导管室里的人设计。视频进、数字出，其他什么都不用动。</span></li>
-      </ul>
-      <div class="flywheel fade d3" aria-label="Data flywheel">
-        <span><span class="en">More procedures</span><span class="zh">更多手术</span></span><i>→</i>
-        <span><span class="en">Expert feedback</span><span class="zh">专家反馈</span></span><i>→</i>
-        <span><span class="en">Better model</span><span class="zh">更好的模型</span></span><i>→</i>
-        <span><span class="en">More useful readouts</span><span class="zh">更有用的读数</span></span><i>→</i>
-        <span><span class="en">More centers</span><span class="zh">更多中心</span></span><i>↺</i>
-      </div>
-    </div>
-  </section>
-
-  <!-- ============ 7. FOUNDER ============ -->
-  <section id="founder">
-    <div class="wrap">
-      <div class="label fade"><span class="en">Founder</span><span class="zh">创始人</span></div>
-      <h2 class="fade"><span class="en">Built from inside the cath lab.</span><span class="zh">从导管室里面长出来的公司。</span></h2>
-      <div class="founder">
-        <!-- Wording follows kmRyo/website/COMPLIANCE-NOTE.md: "fellow" next to Hirslanden; no Swiss-license claims. Procedure count per decisions.md 2026-10-06: combined operator + team member, no separate primary-operator number. -->
-        <figure class="fade d1">
-          <img src="assets/founder-live-case.jpg" alt="Mi Chen at the table during a live-transmitted structural heart case in Zürich, fluoroscopy screens behind her, broadcast cameras in the foreground" loading="lazy">
-          <figcaption><span class="en">Live teaching case, Zürich, 2024.</span><span class="zh">教学直播病例，苏黎世，2024。</span></figcaption>
+      <div class="label fade"><i>04</i><span class="en">Evidence</span><span class="zh">证据</span></div>
+      <h2 class="fade d1"><span class="en">The model is only as good as <em>the clinical definition.</em></span><span class="zh">模型的上限，<em>是临床定义的质量。</em></span></h2>
+      <p class="lead fade d2"><span class="en">Our advantage is not generic computer vision. It is specialist knowledge turned into labels and protocols, trained on in-domain data, and tied to what happened to the patient.</span><span class="zh">我们的优势不是通用计算机视觉，而是把专科知识变成标注和规程，用术中数据训练，并与患者的真实结局挂钩。</span></p>
+      <div class="grid ev-grid">
+        <div class="grid nums fade d1">
+          <div><div class="n">15</div><p><span class="en">structures defined on every frame, by operators</span><span class="zh">个结构，由术者定义，逐帧标注</span></p></div>
+          <div><div class="n">235</div><p><span class="en">patients annotated, ~10,000 frames, under a written protocol</span><span class="zh">例患者已标注，约 10,000 帧，按书面规程</span></p></div>
+          <div><div class="n">4</div><p><span class="en">annotators cross-checked: the expert ceiling was measured before the model</span><span class="zh">位标注者交叉核对：先测专家上限，再评模型</span></p></div>
+          <div><div class="n">203</div><p><span class="en">procedures linked to registry follow-up, to test which readouts predict outcome</span><span class="zh">例手术关联登记库随访，检验哪些读数能预测结局</span></p></div>
+        </div>
+        <figure class="photo fade d2">
+          <img src="assets/tct-2025-stage.jpg" alt="AutoClip segmentation results on the main screen at TCT 2025 in San Francisco, Mi Chen presenting at the podium" loading="lazy">
+          <figcaption><b>TCT 2025, San Francisco.</b> <span class="en">Featured Innovation at the largest interventional cardiology meeting.</span><span class="zh">全球最大介入心脏病学会议的 Featured Innovation。</span></figcaption>
         </figure>
-        <div class="fade d2">
-          <div class="role"><span class="en">Founder & CEO</span><span class="zh">创始人 · CEO</span></div>
-          <div class="name">Mi Chen, MD PhD <span style="color:var(--muted);font-weight:400">陈密</span></div>
-          <p><span class="en">Mi performs the procedure AutoClip guides. She built the first version because, after years at the table, she still had no number to point to when a trainee asked "is this a good grasp?"</span><span class="zh">AutoClip 导航的手术，就是 Mi 自己做的手术。她做第一版的原因很简单：在台上做了这么多年，当学员问「这一夹抓得好吗」，她依然指不出一个数字。</span></p>
-          <ul class="proof">
-            <li><span class="en">Cardiac surgeon specializing in structural heart interventions, TEER and TAVI operator. 1,700+ structural heart procedures as operator and team member.</span><span class="zh">心脏外科医生，专注结构性心脏介入，TEER 与 TAVI 术者。主刀与参与结构性心脏手术共 1,700+ 例。</span></li>
-            <li><span class="en">Trained as a cardiac surgeon at Fuwai Hospital, Beijing. Structural heart fellow at Klinik Hirslanden Zürich. Licensed physician in China.</span><span class="zh">北京阜外医院心脏外科训练。苏黎世 Hirslanden 医院结构性心脏病 Fellow。中国执业医师。</span></li>
-            <li><span class="en">Faculty at TCT, EuroPCR and PCR London Valves.</span><span class="zh">TCT、EuroPCR、PCR London Valves 讲者。</span></li>
-          </ul>
-          <div class="advisors">
-            <div><b>Denis Samuylov, PhD</b> · <span class="en">Technical & operations advisor. Computer vision PhD, ETH Zürich; co-founder of GenAI Zurich.</span><span class="zh">技术与运营顾问。苏黎世联邦理工学院计算机视觉博士，GenAI Zurich 联合创始人。</span></div>
-            <div><b>Haotong Qin, PhD</b> · <span class="en">Research advisor. Postdoctoral researcher, ETH Zürich, efficient deep learning.</span><span class="zh">研究顾问。苏黎世联邦理工学院博士后，高效深度学习。</span></div>
+      </div>
+      <div class="grid status fade d2">
+        <div><span class="mono"><span class="en">Done</span><span class="zh">已完成</span></span><ul>
+          <li><span class="en">15-structure segmentation and clinical readouts on recorded procedures</span><span class="zh">15 结构分割与临床读数，在录像病例上运行</span></li>
+          <li><span class="en">Held-out benchmark: 34 patients, two centres, no overlap with training</span><span class="zh">留出验证：34 位患者、两个中心、与训练零重叠</span></li>
+          <li><span class="en">Outcome-linked cohort of 203 intra-procedural studies</span><span class="zh">203 例术中检查的结局关联队列</span></li>
+        </ul></div>
+        <div class="next"><span class="mono"><span class="en">Next · by March 2027</span><span class="zh">下一步 · 2027 年 3 月前</span></span><ul>
+          <li><span class="en">Real-time inference on the echo video output</span><span class="zh">在超声视频输出上实时推理</span></li>
+          <li><span class="en">Shadow mode in two cath labs under a research protocol</span><span class="zh">两个导管室按研究方案做影子模式运行</span></li>
+          <li><span class="en">FDA Pre-Submission on pathway and validation plan</span><span class="zh">就路径与验证方案向 FDA 提交 Pre-Submission</span></li>
+        </ul></div>
+        <div class="not"><span class="mono"><span class="en">Not yet</span><span class="zh">尚未</span></span><ul>
+          <li><span class="en">Use during patient care</span><span class="zh">用于患者诊疗</span></li>
+          <li><span class="en">External validation</span><span class="zh">外部验证</span></li>
+          <li><span class="en">Regulatory clearance of any kind</span><span class="zh">任何监管许可</span></li>
+        </ul></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 6 · LINEAGE (why now) ============ -->
+  <section class="paper" id="why-now">
+    <div class="wrap">
+      <div class="label fade"><i>05</i><span class="en">Why now</span><span class="zh">为什么是现在</span></div>
+      <h2 class="fade d1"><span class="en">The third generation of <em>edge-to-edge repair.</em></span><span class="zh">缘对缘修复的<em>第三代。</em></span></h2>
+      <div class="grid line fade d2">
+        <div><span class="mono">1991 · <span class="en">Surgical</span><span class="zh">外科</span></span><h3><span class="en">The Alfieri stitch</span><span class="zh">Alfieri 缝合</span></h3><p><span class="en">One suture between the free edges of the two leaflets, Milan. A simple, reproducible repair.</span><span class="zh">米兰。一针缝合两侧瓣叶的游离缘，简单、可重复的修复。</span></p></div>
+        <div><span class="mono">2003 · <span class="en">Transcatheter</span><span class="zh">经导管</span></span><h3><span class="en">The clip, first-in-human</span><span class="zh">夹子首次用于人体</span></h3><p><span class="en">The same repair delivered through a catheter and judged on echo. 300,000+ patients; guideline therapy.</span><span class="zh">同样的修复经导管完成，在超声上判断。30 万+ 患者，写入指南。</span></p></div>
+        <div class="now"><span class="mono">2026 · <span class="en">AI-guided</span><span class="zh">AI 引导</span></span><h3>AutoClip</h3><p><span class="en">The machine learns to see the repair on the echo image. Every decision made by eye gets a number.</span><span class="zh">机器学会在超声图像上看懂这台修复。每个靠肉眼的决策都有了数字。</span></p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 7 · TEAM ============ -->
+  <section class="paper" id="team" style="padding-top:0">
+    <div class="wrap">
+      <div class="label fade"><i>06</i><span class="en">Team</span><span class="zh">团队</span></div>
+      <h2 class="fade d1"><span class="en">An operator and <em>a computer-vision scientist.</em></span><span class="zh">一位术者，<em>一位计算机视觉科学家。</em></span></h2>
+      <div class="grid team">
+        <!-- Wording follows kmRyo/website/COMPLIANCE-NOTE.md and YC v3 Q17: cardiac surgeon, never "interventional cardiologist"; procedure count is operator + team member combined. -->
+        <div class="person fade d1">
+          <img src="assets/team-mi.jpg" alt="Portrait of Mi Chen" loading="lazy">
+          <div>
+            <div class="role"><span class="en">Founder & CEO</span><span class="zh">创始人 · CEO</span></div>
+            <h3>Mi Chen, MD PhD <small>陈密</small></h3>
+            <ul>
+              <li><span class="en">Cardiac surgeon and TEER / TAVI operator; 1,700+ structural heart procedures as operator and team member</span><span class="zh">心脏外科医生，TEER / TAVI 术者；主刀与参与结构性心脏手术 1,700+ 例</span></li>
+              <li><span class="en">Trained at Fuwai Hospital, Beijing; structural heart fellowship at University Hospital Zürich and Klinik Hirslanden</span><span class="zh">北京阜外医院训练；苏黎世大学医院与 Hirslanden 医院结构性心脏病 fellowship</span></li>
+              <li><span class="en">Faculty at TCT, EuroPCR and PCR London Valves</span><span class="zh">TCT、EuroPCR、PCR London Valves 讲者</span></li>
+              <li><span class="en">Writes the model code herself</span><span class="zh">模型代码由她本人编写</span></li>
+            </ul>
+          </div>
+        </div>
+        <div class="person fade d2">
+          <img src="assets/team-denis.jpg" alt="Portrait of Denis Samuylov" loading="lazy">
+          <div>
+            <div class="role"><span class="en">Co-founder & CTO</span><span class="zh">联合创始人 · CTO</span></div>
+            <h3>Denis Samuylov, PhD</h3>
+            <ul>
+              <li><span class="en">PhD in computer vision, ETH Zürich; a decade in the field</span><span class="zh">苏黎世联邦理工学院计算机视觉博士，深耕十年</span></li>
+              <li><span class="en">Co-founder of GenAI Zürich, the applied-AI event series</span><span class="zh">应用 AI 系列活动 GenAI Zürich 联合创始人</span></li>
+              <li><span class="en">Owns the architecture and the real-time inference pipeline</span><span class="zh">负责系统架构与实时推理管线</span></li>
+            </ul>
           </div>
         </div>
       </div>
-    </div>
-  </section>
-
-  <!-- ============ 8. STARTING WITH MITRAL TEER ============ -->
-  <section id="platform">
-    <div class="wrap">
-      <div class="label fade"><span class="en">From wedge to platform</span><span class="zh">从切入点到平台</span></div>
-      <h2 class="fade"><span class="en">Starting with mitral TEER.</span><span class="zh">从二尖瓣 TEER 起步。</span></h2>
-      <p class="lead fade d1"><span class="en">Every catheter procedure on the heart is guided by the same kind of image and runs into the same kind of decisions. The perception layer, the readouts and the outcome link are the same architecture; what changes is the procedural ontology.</span><span class="zh">每一种经导管心脏手术都靠同一类影像引导，遇到同一类决策。感知层、读数、结局关联是同一套架构，变的只是术式本体。</span></p>
-      <ol class="path">
-        <li class="first fade d1"><b><span class="en">Mitral TEER</span><span class="zh">二尖瓣 TEER</span></b><span><span class="en">AutoClip. Now.</span><span class="zh">AutoClip。现在。</span></span></li>
-        <li class="fade d2"><b><span class="en">Tricuspid TEER</span><span class="zh">三尖瓣 TEER</span></b><span><span class="en">Same device, same imaging, new anatomy.</span><span class="zh">同样的器械和影像，新的解剖。</span></span></li>
-        <li class="fade d2"><b><span class="en">TAVI and redo-TAVI</span><span class="zh">TAVI 与再次 TAVI</span></b><span><span class="en">Valve-in-valve positioning and coronary access.</span><span class="zh">瓣中瓣定位与冠脉通路。</span></span></li>
-        <li class="fade d3"><b><span class="en">Other ultrasound-guided structural procedures</span><span class="zh">其他超声引导的结构心手术</span></b><span><span class="en">One perception layer for the whole lab.</span><span class="zh">整个导管室共用一个感知层。</span></span></li>
-      </ol>
-    </div>
-  </section>
-
-  <!-- ============ 9. VISION ============ -->
-  <section id="vision" class="vision">
-    <div class="wrap">
-      <div class="label fade"><span class="en">Where this goes</span><span class="zh">终点</span></div>
-      <h2 class="fade"><span class="en">The heart–machine interface.</span><span class="zh">心脏与机器之间的接口。</span></h2>
-      <p class="lead fade d1"><span class="en">Today a cardiac intervention depends on one person reading several imaging streams at once and turning them into action in their head. Turicor is building the intelligence layer that connects the images, the anatomy, the device and the decision, in real time.</span><span class="zh">今天的心脏介入，靠一个人同时读几路影像，在脑子里把它们变成动作。Turicor 在做的是一层实时的智能：把影像、解剖、器械和决策连起来。</span></p>
-      <div class="stack fade d2">
-        <div class="box"><b><span class="en">In</span><span class="zh">输入</span></b><div>TEE</div><div><span class="en">Fluoroscopy</span><span class="zh">透视</span></div><div>CT</div><div><span class="en">Hemodynamics</span><span class="zh">血流动力学</span></div></div>
-        <div class="arrow" aria-hidden="true">→</div>
-        <div class="box core"><b>Turicor</b><div><span class="en">Live perception of anatomy, device and procedural state. Readouts anchored to anatomy and linked to outcomes.</span><span class="zh">对解剖、器械与手术阶段的实时感知。读数以解剖为锚，并与结局关联。</span></div></div>
-        <div class="arrow" aria-hidden="true">→</div>
-        <div class="box"><b><span class="en">Out</span><span class="zh">输出</span></b><div><span class="en">Guidance</span><span class="zh">导航</span></div><div><span class="en">Quantification</span><span class="zh">定量</span></div><div><span class="en">Navigation</span><span class="zh">路径规划</span></div><div><span class="en">Automation, in time</span><span class="zh">以及最终的自动化</span></div></div>
+      <div class="grid live">
+        <!-- assets/founder-live-case.jpg: patient text on the fluoroscopy screen blurred, camera operator's face softened (2026-10-06). -->
+        <figure class="fade d1">
+          <img src="assets/founder-live-case.jpg" alt="Mi Chen at the table during a live-transmitted structural heart case in Zürich, fluoroscopy screens behind her, broadcast cameras in the foreground" loading="lazy">
+          <figcaption class="mono"><span class="en">Live teaching case · Zürich · 2024</span><span class="zh">教学直播病例 · 苏黎世 · 2024</span></figcaption>
+        </figure>
+        <blockquote class="quote fade d2">
+          <span class="en">“AutoClip is the tool I wanted on the screen every time I clipped a valve.”</span><span class="zh">「AutoClip 是我每次夹瓣膜时，都希望屏幕上有的那个工具。」</span>
+          <cite>Mi Chen</cite>
+        </blockquote>
       </div>
     </div>
   </section>
 
-  <!-- ============ 10. CONTACT ============ -->
-  <section id="contact" class="contact">
+  <!-- ============ 8 · VISION ============ -->
+  <section class="ink" id="vision">
+    <div class="wrap grid vision-grid">
+      <div>
+        <div class="label fade"><i>07</i><span class="en">Where this goes</span><span class="zh">方向</span></div>
+        <h2 class="fade d1"><span class="en">The intelligence layer of <em>cardiac medicine.</em></span><span class="zh">心脏医学的<em>智能层。</em></span></h2>
+        <p class="lead fade d2"><span class="en">We start with the mitral clip. The goal is AI that understands the beating heart in real time, for every catheter procedure. The operating room comes first because it is where perception and action already meet, and every case closes the loop.</span><span class="zh">我们从二尖瓣夹子开始。目标是能实时理解跳动心脏的 AI，服务每一台导管手术。先从手术室做起，因为那里感知与动作已经相遇，每一台手术都让闭环转一圈。</span></p>
+        <ul class="path fade d3">
+          <li class="now"><span class="mono"><span class="en">Now</span><span class="zh">现在</span></span><span><b><span class="en">Mitral TEER</span><span class="zh">二尖瓣 TEER</span></b> · <span class="en">one workflow, validated at outside centres</span><span class="zh">一个工作流，在外部中心验证</span></span></li>
+          <li><span class="mono"><span class="en">Next</span><span class="zh">下一步</span></span><span><b><span class="en">Tricuspid TEER, TAVI</span><span class="zh">三尖瓣 TEER、TAVI</span></b> · <span class="en">one shared heart model across procedures</span><span class="zh">跨术式共用一个心脏模型</span></span></li>
+          <li><span class="mono"><span class="en">Later</span><span class="zh">之后</span></span><span><b><span class="en">Beyond the valve</span><span class="zh">瓣膜之外</span></b> · <span class="en">only where the evidence carries over</span><span class="zh">只在证据能迁移的地方</span></span></li>
+        </ul>
+      </div>
+      <div class="fade d2"><svg class="loop" viewBox="-75 -2 550 420" role="img" aria-label="Understand, predict, plan, guide, learn: a loop. AutoClip is the guide step, now."><defs><marker id="ah" viewBox="0 0 10 10" refX="7" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1 L8 5 L1 9" fill="none" stroke="#A7E8CA" stroke-width="1.4"/></marker></defs>
+<circle class="ring" cx="200" cy="200" r="128"/>
+<path class="arc" d="M228.8 75.3 A128 128 0 0 1 309.7 134.1" marker-end="url(#ah)"/>
+<path class="arc" d="M327.5 188.8 A128 128 0 0 1 296.6 284.0" marker-end="url(#ah)"/>
+<path class="arc" d="M250.0 317.8 A128 128 0 0 1 150.0 317.8" marker-end="url(#ah)"/>
+<path class="arc" d="M103.4 284.0 A128 128 0 0 1 72.5 188.8" marker-end="url(#ah)"/>
+<path class="arc" d="M90.3 134.1 A128 128 0 0 1 171.2 75.3" marker-end="url(#ah)"/>
+<text class="core" x="200" y="194" text-anchor="middle">TWO FLYWHEELS</text><text class="core" x="200" y="210" text-anchor="middle">ONE PATIENT MODEL</text>
+<circle class="node" cx="200.0" cy="72.0" r="9"/>
+<text x="200.0" y="36.0" text-anchor="middle" class=""><tspan class="en">Understand</tspan><tspan class="zh">理解</tspan></text>
+<text class="sub" x="200.0" y="51.0" text-anchor="middle"><tspan class="en">ANATOMY & FUNCTION</tspan><tspan class="zh">解剖与功能</tspan></text>
+<circle class="node" cx="321.7" cy="160.4" r="9"/>
+<text x="344.6" y="153.0" text-anchor="start" class=""><tspan class="en">Predict</tspan><tspan class="zh">预测</tspan></text>
+<text class="sub" x="344.6" y="168.0" text-anchor="start"><tspan class="en">WHO BENEFITS, WHEN</tspan><tspan class="zh">谁获益、何时</tspan></text>
+<circle class="node" cx="275.2" cy="303.6" r="9"/>
+<text x="289.3" y="331.0" text-anchor="start" class=""><tspan class="en">Plan</tspan><tspan class="zh">规划</tspan></text>
+<text class="sub" x="289.3" y="346.0" text-anchor="start"><tspan class="en">DEVICE, STRATEGY</tspan><tspan class="zh">器械与策略</tspan></text>
+<circle class="node on" cx="124.8" cy="303.6" r="9"/>
+<text x="110.7" y="331.0" text-anchor="end" class="now"><tspan class="en">Guide</tspan><tspan class="zh">引导</tspan></text>
+<text class="sub now" x="110.7" y="346.0" text-anchor="end"><tspan class="en">NOW · AUTOCLIP</tspan><tspan class="zh">现在 · AUTOCLIP</tspan></text>
+<circle class="node" cx="78.3" cy="160.4" r="9"/>
+<text x="55.4" y="153.0" text-anchor="end" class=""><tspan class="en">Learn</tspan><tspan class="zh">学习</tspan></text>
+<text class="sub" x="55.4" y="168.0" text-anchor="end"><tspan class="en">OUTCOMES AT 1 YEAR</tspan><tspan class="zh">一年结局</tspan></text>
+</svg></div>
+    </div>
+  </section>
+
+  <!-- ============ 9 · CONTACT ============ -->
+  <section class="paper" id="contact">
     <div class="wrap">
-      <div class="label fade"><span class="en">Contact</span><span class="zh">联系</span></div>
-      <h2 class="fade"><span class="en">Operators, imaging teams, device makers and investors: talk to us.</span><span class="zh">术者、影像团队、器械厂商与投资人：联系我们。</span></h2>
-      <p class="lead fade d1"><span class="en">We are looking for validation partners for the live-feed version, and for people who want to build it with us in the Bay Area.</span><span class="zh">我们正在寻找实时版本的验证合作伙伴，以及愿意在湾区一起把它做出来的人。</span></p>
-      <div class="cta fade d2" style="margin-top:1.6rem">
-        <a class="btn btn-fill" href="mailto:hello@turicor.com?subject=AutoClip">hello@turicor.com</a>
+      <div class="label fade"><i>08</i><span class="en">Contact</span><span class="zh">联系</span></div>
+      <h2 class="fade d1"><span class="en">Build it <em>with us.</em></span><span class="zh">和我们<em>一起做。</em></span></h2>
+      <div class="grid routes">
+        <a class="route fade d1" href="mailto:hello@turicor.com?subject=AutoClip%20validation%20site"><span class="mono"><span class="en">Operators & centres</span><span class="zh">术者与中心</span></span><h3><span class="en">Validate the live version</span><span class="zh">验证实时版本</span></h3><p><span class="en">We are choosing two cath labs for research-only shadow-mode runs, in Europe and the US.</span><span class="zh">我们正在欧洲和美国选两个导管室，做仅用于研究的影子模式运行。</span></p><span class="go">hello@turicor.com →</span></a>
+        <a class="route fade d1" href="mailto:hello@turicor.com?subject=AutoClip%20device%20partnership"><span class="mono"><span class="en">Device makers</span><span class="zh">器械厂商</span></span><h3><span class="en">Evidence for your clip</span><span class="zh">为你的夹子积累证据</span></h3><p><span class="en">Imaging AI and outcome evidence for clips that ship without it.</span><span class="zh">为没有影像 AI 的夹子提供 AI 与结局证据。</span></p><span class="go">hello@turicor.com →</span></a>
+        <a class="route fade d2" href="mailto:hello@turicor.com?subject=Engineering%20at%20Turicor"><span class="mono"><span class="en">Engineers</span><span class="zh">工程师</span></span><h3><span class="en">Real-time imaging, SF</span><span class="zh">实时影像，旧金山</span></h3><p><span class="en">ML and real-time imaging engineers who want their code in the operating room.</span><span class="zh">想让自己的代码进手术室的 ML 与实时影像工程师。</span></p><span class="go">hello@turicor.com →</span></a>
+        <a class="route fade d2" href="mailto:hello@turicor.com?subject=Investing%20in%20Turicor"><span class="mono"><span class="en">Investors</span><span class="zh">投资人</span></span><h3><span class="en">Talk to the founders</span><span class="zh">和创始人聊</span></h3><p><span class="en">We are in the San Francisco Bay Area and happy to show the demo.</span><span class="zh">我们在旧金山湾区，欢迎当面看演示。</span></p><span class="go">hello@turicor.com →</span></a>
       </div>
     </div>
   </section>
@@ -465,13 +584,14 @@ footer .disclaimer { max-width: 72ch; margin-top: 1rem; line-height: 1.55; }
 <footer>
   <div class="wrap">
     <div class="row">
-      <span>© 2026 Turicor · 图灵心</span>
-      <span><span class="en">Zürich · San Francisco · Beijing</span><span class="zh">苏黎世 · 旧金山 · 北京</span></span>
+      <a class="brand" href="#top" aria-label="Turicor, back to top"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 455.5 120.0" role="img" aria-hidden="true"><g transform="translate(-8 10)"><path d="M20.5 0H79.5A2.5 2.5 0 0 1 82 2.5V9.5A2.5 2.5 0 0 1 79.5 12H20.5A2.5 2.5 0 0 1 18 9.5V2.5A2.5 2.5 0 0 1 20.5 0Z" fill="currentColor"/><path d="M46.5 14.5H53.5L73.6 89.8A81.5 81.5 0 0 1 26.4 89.8Z" fill="currentColor" stroke="currentColor" stroke-width="5" stroke-linejoin="round"/><path d="M44 10H56V14H44Z" fill="currentColor"/><circle cx="50" cy="79" r="5" class="dot"/></g><g transform="translate(76.78 110)" fill="currentColor"><path d="M32.22222222222222 1.3888888888888888Q24.86111111111111 1.3888888888888888 19.51388888888889 -1.7361111111111114Q14.166666666666668 -4.861111111111112 11.319444444444446 -10.277777777777779Q8.472222222222223 -15.694444444444445 8.472222222222223 -22.5V-70.83333333333334H25.972222222222225V-26.11111111111111Q25.972222222222225 -19.583333333333336 29.236111111111114 -16.25Q32.5 -12.916666666666668 38.47222222222222 -12.916666666666668Q43.88888888888889 -12.916666666666668 47.986111111111114 -15.416666666666668Q52.083333333333336 -17.916666666666668 54.51388888888889 -22.430555555555557Q56.94444444444445 -26.944444444444446 56.94444444444445 -32.63888888888889L58.75 -15.694444444444445Q55.27777777777778 -7.916666666666667 48.40277777777778 -3.2638888888888893Q41.52777777777778 1.3888888888888888 32.22222222222222 1.3888888888888888ZM57.5 0.0V-16.666666666666668H56.94444444444445V-70.83333333333334H74.58333333333334V0.0Z"/><path d="M89.72222222222221 0.0V-70.83333333333334H106.80555555555554V-53.75H107.22222222222221V0.0ZM107.22222222222221 -36.94444444444444 105.41666666666666 -53.75Q107.91666666666666 -62.77777777777778 113.88888888888889 -67.5Q119.8611111111111 -72.22222222222223 128.19444444444443 -72.22222222222223Q131.11111111111111 -72.22222222222223 132.36111111111111 -71.66666666666667V-55.13888888888889Q131.66666666666666 -55.41666666666667 130.41666666666666 -55.486111111111114Q129.16666666666666 -55.55555555555556 127.36111111111111 -55.55555555555556Q117.22222222222221 -55.55555555555556 112.22222222222221 -51.111111111111114Q107.22222222222221 -46.66666666666667 107.22222222222221 -36.94444444444444Z"/><path d="M139.30555555555554 0.0V-70.83333333333334H156.80555555555554V0.0ZM138.47222222222223 -82.5V-101.80555555555556H157.5V-82.5Z"/><path d="M202.36111111111111 1.3888888888888888Q191.66666666666669 1.3888888888888888 183.54166666666669 -3.333333333333333Q175.41666666666666 -8.055555555555555 170.76388888888889 -16.458333333333332Q166.11111111111111 -24.86111111111111 166.11111111111111 -35.55555555555556Q166.11111111111111 -46.25 170.76388888888889 -54.513888888888886Q175.41666666666666 -62.77777777777778 183.54166666666669 -67.5Q191.66666666666669 -72.22222222222223 202.36111111111111 -72.22222222222223Q211.11111111111111 -72.22222222222223 218.19444444444446 -68.95833333333334Q225.27777777777777 -65.69444444444444 229.86111111111111 -59.79166666666667Q234.44444444444446 -53.88888888888889 235.69444444444446 -46.111111111111114H218.88888888888889Q217.36111111111111 -51.80555555555556 213.05555555555554 -55.0Q208.75 -58.19444444444445 202.63888888888889 -58.19444444444445Q196.94444444444446 -58.19444444444445 192.84722222222223 -55.41666666666667Q188.75 -52.63888888888889 186.52777777777777 -47.5Q184.30555555555557 -42.361111111111114 184.30555555555557 -35.55555555555556Q184.30555555555557 -28.61111111111111 186.52777777777777 -23.47222222222222Q188.75 -18.333333333333336 192.91666666666669 -15.486111111111112Q197.08333333333334 -12.63888888888889 202.63888888888889 -12.63888888888889Q208.75 -12.63888888888889 213.05555555555554 -15.833333333333334Q217.36111111111111 -19.02777777777778 218.88888888888889 -24.722222222222225H235.69444444444446Q234.44444444444446 -16.944444444444446 229.79166666666669 -11.041666666666668Q225.13888888888889 -5.138888888888889 218.125 -1.8750000000000002Q211.11111111111111 1.3888888888888888 202.36111111111111 1.3888888888888888Z"/><path d="M276.6666666666667 1.3888888888888888Q265.4166666666667 1.3888888888888888 256.875 -3.333333333333333Q248.33333333333334 -8.055555555555555 243.61111111111111 -16.458333333333332Q238.88888888888889 -24.86111111111111 238.88888888888889 -35.69444444444444Q238.88888888888889 -46.52777777777778 243.61111111111111 -54.72222222222223Q248.33333333333334 -62.91666666666667 256.875 -67.56944444444446Q265.4166666666667 -72.22222222222223 276.6666666666667 -72.22222222222223Q288.05555555555554 -72.22222222222223 296.52777777777777 -67.56944444444446Q305.0 -62.91666666666667 309.72222222222223 -54.72222222222223Q314.44444444444446 -46.52777777777778 314.44444444444446 -35.69444444444444Q314.44444444444446 -24.86111111111111 309.65277777777777 -16.458333333333332Q304.8611111111111 -8.055555555555555 296.3888888888889 -3.333333333333333Q287.9166666666667 1.3888888888888888 276.6666666666667 1.3888888888888888ZM276.6666666666667 -12.63888888888889Q282.22222222222223 -12.63888888888889 286.66666666666663 -15.486111111111112Q291.1111111111111 -18.333333333333336 293.6111111111111 -23.541666666666668Q296.1111111111111 -28.75 296.1111111111111 -35.833333333333336Q296.1111111111111 -46.25 290.625 -52.22222222222223Q285.1388888888889 -58.19444444444445 276.6666666666667 -58.19444444444445Q268.19444444444446 -58.19444444444445 262.6388888888889 -52.22222222222223Q257.0833333333333 -46.25 257.0833333333333 -35.833333333333336Q257.0833333333333 -28.75 259.65277777777777 -23.541666666666668Q262.22222222222223 -18.333333333333336 266.59722222222223 -15.486111111111112Q270.97222222222223 -12.63888888888889 276.6666666666667 -12.63888888888889Z"/><path d="M323.88888888888886 0.0V-70.83333333333334H340.97222222222223V-53.75H341.38888888888886V0.0ZM341.38888888888886 -36.94444444444444 339.5833333333333 -53.75Q342.0833333333333 -62.77777777777778 348.05555555555554 -67.5Q354.02777777777777 -72.22222222222223 362.3611111111111 -72.22222222222223Q365.27777777777777 -72.22222222222223 366.52777777777777 -71.66666666666667V-55.13888888888889Q365.8333333333333 -55.41666666666667 364.5833333333333 -55.486111111111114Q363.3333333333333 -55.55555555555556 361.52777777777777 -55.55555555555556Q351.38888888888886 -55.55555555555556 346.38888888888886 -51.111111111111114Q341.38888888888886 -46.66666666666667 341.38888888888886 -36.94444444444444Z"/></g></svg></a>
+      <span>San Francisco · Zürich &nbsp;·&nbsp; <a href="mailto:hello@turicor.com">hello@turicor.com</a></span>
     </div>
     <p class="disclaimer">
       <span class="en">AutoClip is a research prototype. It is not cleared or approved for clinical use by the FDA, the NMPA or any other regulator, and it does not replace the judgement of the treating physician. Imaging shown on this site is de-identified and replayed offline.</span>
-      <span class="zh">AutoClip 为研究原型，尚未获得 FDA、NMPA 或任何其他监管机构的临床使用许可，不能替代主治医生的判断。本站展示的影像均已去标识并为离线回放。</span>
+      <span class="zh">AutoClip 为研究原型，尚未获得 FDA、NMPA 或任何其他监管机构的临床使用许可，不能替代主治医生的判断。本站展示的影像均已去标识，为离线回放。</span>
     </p>
+    <p class="disclaimer">© 2026 Turicor · 图灵心</p>
   </div>
 </footer>
 
@@ -489,11 +609,11 @@ function setLang(l) {
 toggle.addEventListener('click', () => setLang(html.dataset.lang === 'en' ? 'zh' : 'en'));
 try { const saved = localStorage.getItem('turicor-lang'); if (saved === 'zh' || saved === 'en') setLang(saved); } catch (e) {}
 
-/* ---- reveals: hero immediately, the rest on scroll ---- */
+/* ---- reveals: hero at once, the rest on scroll ---- */
 requestAnimationFrame(() => document.querySelectorAll('.hero .fade').forEach(el => el.classList.add('in')));
 const io = new IntersectionObserver(entries => {
   entries.forEach(en => { if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); } });
-}, { threshold: 0.12 });
+}, { threshold: 0.1 });
 document.querySelectorAll('main > section:not(.hero) .fade').forEach(el => io.observe(el));
 
 /* ---- nav ---- */
@@ -502,7 +622,7 @@ let lastY = 0;
 addEventListener('scroll', () => {
   const y = scrollY;
   nav.classList.toggle('solid', y > 40);
-  nav.classList.toggle('hide', y > 160 && y > lastY);
+  nav.classList.toggle('hide', y > 200 && y > lastY);
   lastY = y;
 }, { passive: true });
 </script>
