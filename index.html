@@ -132,10 +132,24 @@ html.reduced .fade { opacity: 1 !important; transform: none !important; transiti
 .hero { min-height: 100svh; display: flex; flex-direction: column; justify-content: center; padding: 7rem 0 3rem; }
 .hero-grid { grid-template-columns: 1fr 1.1fr; align-items: center; }
 .hero .lead { margin-bottom: 2rem; }
-.player { border-radius: 14px; overflow: hidden; background: #000; border: 1px solid var(--hair-ink); }
-.player video { width: 100%; aspect-ratio: 926/518; object-fit: contain; background: #000; }
-.player .bar { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 1rem; padding: 0.7rem 1rem; background: var(--ink-deep); color: var(--on-ink-3); }
-.player .bar b { color: var(--ember); font-weight: 500; }
+.stage { min-width: 0; }
+.slides { position: relative; aspect-ratio: 2/1; border-radius: 14px; overflow: hidden; background: #000; border: 1px solid var(--hair-ink); touch-action: pan-y; }
+.slide { position: absolute; inset: 0; opacity: 0; transform: translateX(6%); transition: opacity 0.7s ease, transform 0.9s cubic-bezier(.2,.7,.2,1); pointer-events: none; }
+.slide.on { opacity: 1; transform: none; pointer-events: auto; }
+.slide.out { opacity: 0; transform: translateX(-6%); }
+.slide.back { transform: translateX(-6%); }
+.slide video { width: 100%; height: 100%; object-fit: contain; background: #000; }
+.steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.9rem; margin-top: 0.9rem; }
+.step { text-align: left; color: var(--on-ink-3); padding: 0; transition: color 0.3s; }
+.step:hover, .step.on { color: var(--on-ink); }
+.step .bar-track { display: block; height: 2px; background: var(--hair-ink); border-radius: 2px; overflow: hidden; margin-bottom: 0.6rem; }
+.step .bar-track i { display: block; height: 100%; width: 0; background: var(--ember); }
+.step.done .bar-track i { width: 100%; background: var(--on-ink-3); }
+.step .mono { display: block; color: inherit; }
+.step.on .mono { color: var(--ember); }
+.step .t { display: block; font-size: 0.84rem; margin-top: 0.2rem; line-height: 1.35; }
+.stage .note { margin-top: 0.9rem; color: var(--on-ink-3); font-size: 0.64rem; }
+@media (max-width: 480px) { .step .t { display: none; } }
 .proof { margin-top: clamp(3rem, 7vw, 5rem); border-top: 1px solid var(--hair-ink); grid-template-columns: repeat(4, 1fr); gap: 0; }
 .proof > div { padding: 1.3rem 1.4rem 0 0; }
 .proof > div + div { padding-left: 1.4rem; border-left: 1px solid var(--hair-ink); }
@@ -159,7 +173,8 @@ html.reduced .fade { opacity: 1 !important; transform: none !important; transiti
 
 /* ============ 3 · PRODUCT ============ */
 .decisions { grid-template-columns: repeat(3, 1fr); margin-top: clamp(2.5rem, 5vw, 3.5rem); }
-.decision { background: var(--ink-raise); border: 1px solid var(--hair-ink); border-radius: 14px; padding: 1.6rem 1.6rem 1.7rem; }
+.decision { background: var(--ink-raise); border: 1px solid var(--hair-ink); border-radius: 14px; padding: 0 1.6rem 1.7rem; overflow: hidden; }
+.decision img { width: calc(100% + 3.2rem); height: auto; max-width: none; margin: 0 -1.6rem 1.3rem; aspect-ratio: 1000/525; object-fit: cover; background: #000; border-bottom: 1px solid var(--hair-ink); }
 .decision .k { font-family: var(--mono); color: var(--ember); font-size: 0.78rem; letter-spacing: 0.12em; }
 .decision h3 { font-family: var(--serif); font-weight: 400; font-size: 1.9rem; margin: 0.5rem 0 0.9rem; }
 .decision .q { color: var(--on-ink); font-size: 0.98rem; }
@@ -317,10 +332,19 @@ footer .disclaimer { max-width: 76ch; margin-top: 1.4rem; line-height: 1.6; }
             <a class="btn btn-line" href="#contact"><span class="en">Talk to us</span><span class="zh">联系我们</span></a>
           </div>
         </div>
-        <figure class="player fade d2" id="demo">
-          <!-- assets/autoclip-demo.mp4: de-identified intra-procedural biplane TEE, cropped to the two imaging sectors, no machine text, no audio (checked 2026-10-06). -->
-          <video src="assets/autoclip-demo.mp4" poster="assets/autoclip-demo-poster.jpg" autoplay muted loop playsinline preload="metadata" aria-label="De-identified intra-procedural biplane TEE with AutoClip segmentation overlay"></video>
-          <figcaption class="bar mono"><span><b>●</b> <span class="en">Offline replay · recorded procedure</span><span class="zh">离线回放 · 真实手术录像</span></span><span class="en">Not for clinical use</span><span class="zh">非临床使用</span></figcaption>
+        <figure class="stage fade d2" id="demo" aria-roledescription="carousel" aria-label="From raw echo to model to 3D guidance">
+          <!-- assets/hero/: san_raffaele 03_007 frames f150–f380, the same 8.5 s in all three (raw echo, AutoClip overlay, Nav3D replay). Echo cropped to the two sectors, player badges masked; checked 2026-10-27, no identifiers. -->
+          <div class="slides">
+            <div class="slide on" aria-roledescription="slide" aria-label="1 of 3: raw echo"><video src="assets/hero/echo-off.mp4" poster="assets/hero/echo-off-poster.jpg" muted playsinline preload="auto" aria-label="Raw intra-procedural biplane TEE"></video></div>
+            <div class="slide" aria-roledescription="slide" aria-label="2 of 3: AutoClip model"><video data-src="assets/hero/echo-on.mp4" poster="assets/hero/echo-on-poster.jpg" muted playsinline preload="none" aria-label="The same TEE with AutoClip segmentation of leaflets, grippers and clip"></video></div>
+            <div class="slide" aria-roledescription="slide" aria-label="3 of 3: 3D guidance"><video data-src="assets/hero/guide-3d.mp4" poster="assets/hero/guide-3d-poster.jpg" muted playsinline preload="none" aria-label="The same moment replayed as a 3D model of the valve and clip"></video></div>
+          </div>
+          <div class="steps" role="tablist">
+            <button class="step on" role="tab" aria-selected="true"><span class="bar-track"><i></i></span><span class="mono">01 · Echo</span><span class="t"><span class="en">What the operator sees today</span><span class="zh">术者今天看到的</span></span></button>
+            <button class="step" role="tab" aria-selected="false"><span class="bar-track"><i></i></span><span class="mono">02 · Model</span><span class="t"><span class="en">AutoClip reads every frame</span><span class="zh">AutoClip 读懂每一帧</span></span></button>
+            <button class="step" role="tab" aria-selected="false"><span class="bar-track"><i></i></span><span class="mono">03 · Guide</span><span class="t"><span class="en">The same moment, in 3D</span><span class="zh">同一时刻，三维导航</span></span></button>
+          </div>
+          <figcaption class="note mono"><span class="en">Offline replay of a recorded procedure · not for clinical use</span><span class="zh">真实手术录像离线回放 · 非临床使用</span></figcaption>
         </figure>
       </div>
       <div class="grid proof fade d3">
@@ -372,6 +396,7 @@ footer .disclaimer { max-width: 76ch; margin-top: 1.4rem; line-height: 1.6; }
       </p>
       <div class="grid decisions">
         <article class="decision fade d1">
+          <img src="assets/decision-position.jpg" alt="Clip trajectory onto the valve in two echo planes, bicommissural and LVOT, with the angle to the target" loading="lazy" width="1000" height="525">
           <div class="k">01</div>
           <h3><span class="en">Position</span><span class="zh">定位</span></h3>
           <p class="q"><span class="en">Is the clip on target?</span><span class="zh">夹子对准目标了吗？</span></p>
@@ -379,6 +404,7 @@ footer .disclaimer { max-width: 76ch; margin-top: 1.4rem; line-height: 1.6; }
           <div class="ac"><span>AutoClip</span><span><span class="en">Clip trajectory onto the target, in both planes.</span><span class="zh">夹子在两个切面上相对目标的轨迹。</span></span></div>
         </article>
         <article class="decision fade d2">
+          <img src="assets/decision-grasp.jpg" alt="LVOT echo view of the clip with posterior and anterior leaflet insertion depth in millimetres" loading="lazy" width="1000" height="525">
           <div class="k">02</div>
           <h3><span class="en">Grasp</span><span class="zh">夹持</span></h3>
           <p class="q"><span class="en">Are both leaflets inside?</span><span class="zh">两侧瓣叶都夹进去了吗？</span></p>
@@ -386,23 +412,13 @@ footer .disclaimer { max-width: 76ch; margin-top: 1.4rem; line-height: 1.6; }
           <div class="ac"><span>AutoClip</span><span><span class="en">Insertion depth of each leaflet inside the clip, in millimetres.</span><span class="zh">每侧瓣叶在夹子内的插入深度，以毫米计。</span></span></div>
         </article>
         <article class="decision fade d3">
+          <img src="assets/decision-release.jpg" alt="Colour Doppler after the clip next to the five-item release checklist, all criteria met" loading="lazy" width="1000" height="525">
           <div class="k">03</div>
           <h3><span class="en">Release</span><span class="zh">释放</span></h3>
           <p class="q"><span class="en">Is the result good enough to let go?</span><span class="zh">结果够好，可以释放了吗？</span></p>
           <div class="today"><span><span class="en">Today</span><span class="zh">现在</span></span><span><span class="en">A judgement call, case by case.</span><span class="zh">逐例凭经验判断。</span></span></div>
           <div class="ac"><span>AutoClip</span><span><span class="en">Five release criteria, each checked before letting go.</span><span class="zh">五项释放标准，逐项核对后再释放。</span></span></div>
         </article>
-      </div>
-      <div class="grid readouts">
-        <!-- assets/readout-m1.jpg / readout-m2.jpg: de-identified single TEE frames with AutoClip overlays, from the clinical-metrics report. -->
-        <figure class="readout fade d1">
-          <img src="assets/readout-m1.jpg" alt="TEE frame with AutoClip overlay: anterior leaflet, gripper and grasped zone segmented; grasped leaflet length reads 4.8 mm" loading="lazy">
-          <figcaption><b><span class="en">Grasped leaflet length</span><span class="zh">夹持瓣叶长度</span> · <span class="v">4.8 mm</span></b><span class="en">How much leaflet the clip is holding. Operators aim for 4–5 mm; today it is judged by eye.</span><span class="zh">夹子抓住了多少瓣叶。术者的目标是 4–5 mm，今天靠眼睛估。</span></figcaption>
-        </figure>
-        <figure class="readout fade d2">
-          <img src="assets/readout-m2.jpg" alt="TEE frame with AutoClip overlay: clip, medial and lateral papillary muscles segmented; clip position on the papillary-muscle axis reads t = 0.54" loading="lazy">
-          <figcaption><b><span class="en">Clip position</span><span class="zh">夹子位置</span> · <span class="v">t = 0.54</span></b><span class="en">Where the clip sits between the two papillary muscles. Anchored to anatomy, so it does not change with the probe angle.</span><span class="zh">夹子在两组乳头肌之间的位置。以解剖为锚，不随探头角度变化。</span></figcaption>
-        </figure>
       </div>
     </div>
   </section>
@@ -625,6 +641,44 @@ addEventListener('scroll', () => {
   nav.classList.toggle('hide', y > 200 && y > lastY);
   lastY = y;
 }, { passive: true });
+/* ---- hero stage: echo → model → 3D, each plays to its end then hands over ---- */
+(() => {
+  const stage = document.getElementById('demo'); if (!stage) return;
+  const slides = [...stage.querySelectorAll('.slide')], steps = [...stage.querySelectorAll('.step')];
+  const vids = slides.map(s => s.querySelector('video'));
+  const still = html.classList.contains('reduced');
+  let cur = 0, raf = 0;
+  const load = v => { if (v && !v.getAttribute('src') && v.dataset.src) { v.src = v.dataset.src; v.preload = 'auto'; } };
+  const ok = i => !vids[i].dataset.broken;
+  function tick() {
+    const v = vids[cur], bar = steps[cur].querySelector('i');
+    if (v.duration) bar.style.width = (100 * v.currentTime / v.duration).toFixed(2) + '%';
+    raf = requestAnimationFrame(tick);
+  }
+  function go(i, dir = 1) {
+    let n = 0; while (!ok(i) && n++ < 3) i = (i + dir + 3) % 3;
+    if (i === cur && slides[i].classList.contains('on') && n) return;
+    const prev = cur; cur = i;
+    slides.forEach((s, k) => { s.classList.toggle('on', k === i); s.classList.toggle('out', k === prev && k !== i); s.classList.toggle('back', dir < 0 && k !== i && k !== prev); });
+    steps.forEach((b, k) => { b.classList.toggle('on', k === i); b.classList.toggle('done', !still && (k < i)); b.setAttribute('aria-selected', k === i); b.querySelector('i').style.width = k < i ? '100%' : '0'; });
+    vids.forEach((v, k) => { if (k !== i) v.pause(); });
+    load(vids[i]); load(vids[(i + 1) % 3]);
+    if (!still) { vids[i].currentTime = 0; vids[i].play().catch(() => {}); }
+    setTimeout(() => slides[prev].classList.remove('out'), 900);
+  }
+  vids.forEach((v, k) => {
+    v.addEventListener('ended', () => go((k + 1) % 3));
+    v.addEventListener('error', () => { v.dataset.broken = 1; steps[k].hidden = true; if (k === cur) go((k + 1) % 3); });
+  });
+  steps.forEach((b, k) => b.addEventListener('click', () => go(k, k < cur ? -1 : 1)));
+  stage.addEventListener('keydown', e => { if (e.key === 'ArrowRight') go((cur + 1) % 3); if (e.key === 'ArrowLeft') go((cur + 2) % 3, -1); });
+  let x0 = null;
+  stage.querySelector('.slides').addEventListener('pointerdown', e => { x0 = e.clientX; });
+  addEventListener('pointerup', e => { if (x0 === null) return; const dx = e.clientX - x0; x0 = null; if (Math.abs(dx) > 40) dx < 0 ? go((cur + 1) % 3) : go((cur + 2) % 3, -1); });
+  if (!still) { vids[0].play().catch(() => {}); tick(); }
+  /* pause when the hero is off screen */
+  new IntersectionObserver(([en]) => { if (still) return; en.isIntersecting ? vids[cur].play().catch(() => {}) : vids[cur].pause(); }, { threshold: 0.2 }).observe(stage);
+})();
 </script>
 </body>
 </html>
