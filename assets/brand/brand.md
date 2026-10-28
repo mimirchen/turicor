@@ -36,6 +36,7 @@ Rules: the wordmark is always one colour (cream on dark, ink on light). The dot 
 | `2026-10-20_turicor_lockup_cn_v1_cream.svg` / `_ink.svg` | Turicor · 图灵心 horizontal lockup |
 | `2026-10-20_turicor_T_v1_*.svg` | the T alone, no background (ink / cream / red-hole) |
 | `2026-10-20_turicor_icon_v1_*.svg` and `*_512.png` | rounded square app icon (ink / cream / red backgrounds) |
+| `2026-10-20_turicor_social_v1_ink_1200.png` / `_400.png` (and `_cream_`) | **LinkedIn / X / WeChat avatars and company-page logos**: square to the edge, no rounded corners (the platform adds its own frame or circle). Upload the 1200 one; 400 is the LinkedIn minimum |
 | `favicon.svg`, `favicon.ico`, `favicon-16.png`, `favicon-32.png` | browser tab (square, no dot) |
 | `apple-touch-icon.png` | iOS home screen, 180 px, square (iOS rounds it) |
 | `2026-10-20_turicor_logo_generator_v1.py` | regenerates every SVG from the numbers above |
